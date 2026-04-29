@@ -102,6 +102,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+ <p>BPM: <span id="bpm">--</span></p>
+ <p>SpO2: <span id="spo2">--</span></p>
+ <p>Estado: <span id="estado">--</span></p>
+
+   // BPM
+const bpmRef = ref(db, 'medicion/bpm');
+onValue(bpmRef, (snapshot) => {
+  document.getElementById("bpm").innerText = snapshot.val();
+});
+
+// SpO2
+const spo2Ref = ref(db, 'medicion/spo2');
+onValue(spo2Ref, (snapshot) => {
+  document.getElementById("spo2").innerText = snapshot.val();
+});
+
+// Estado
+const estadoRef = ref(db, 'medicion/estado');
+onValue(estadoRef, (snapshot) => {
+  document.getElementById("estado").innerText = snapshot.val();
+});
+
 </script>  
 
   html += "</body></html>";
