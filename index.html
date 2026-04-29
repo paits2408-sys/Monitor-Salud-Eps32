@@ -143,6 +143,10 @@ onValue(ref(db, 'paciente/edad'), snap=>{
   document.getElementById("edad").innerText = snap.val();
 });
 
+onValue(ref(db, 'paciente/sangre'), snap=>{
+  document.getElementById("sangre").innerText = snap.val();
+});  
+
 // MEDICIÓN
 onValue(ref(db, 'medicion/bpm'), snap=>{
   document.getElementById("bpm").innerText = snap.val();
