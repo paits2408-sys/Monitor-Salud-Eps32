@@ -1,131 +1,171 @@
-String html = "<!DOCTYPE html><html lang='es'>";
-  html += "<head>";
-  html += "<meta charset='UTF-8'>";
-  html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
-  html += "<meta http-equiv='refresh' content='2'>";
-  html += "<title>Monitor de Salud ESP32</title>";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitor de Salud ESP32</title>
 
-  html += "<style>";
-  html += "body{font-family:Arial,sans-serif;text-align:center;margin:0;padding:20px;min-height:100vh;color:#1a2c4f;";
-  html += "background:linear-gradient(135deg,#dceeff,#eef7ff);overflow-x:hidden;position:relative;}"; //de oscuro a claro
+<style>
+body{
+  font-family:Arial,sans-serif;
+  text-align:center;
+  margin:0;
+  padding:20px;
+  min-height:100vh;
+  color:#1a2c4f;
+  background:linear-gradient(135deg,#dceeff,#eef7ff);
+  overflow-x:hidden;
+  position:relative;
+}
 
-  // Signos médicos
-  html += ".cross{position:fixed;font-size:80px;color:rgba(100,150,255,0.15);font-weight:bold;z-index:-1;user-select:none;}";
-  html += ".cross1{top:30px;left:40px;}";
-  html += ".cross2{top:80px;right:60px;}";
-  html += ".cross3{bottom:120px;left:70px;}";
-  html += ".cross4{bottom:60px;right:80px;}";
+/* Signos médicos */
+.cross{
+  position:fixed;
+  font-size:80px;
+  color:rgba(100,150,255,0.15);
+  font-weight:bold;
+  z-index:-1;
+}
+.cross1{top:30px;left:40px;}
+.cross2{top:80px;right:60px;}
+.cross3{bottom:120px;left:70px;}
+.cross4{bottom:60px;right:80px;}
 
-  html += "h1{margin-top:20px;margin-bottom:25px;font-size:34px;}";
+h1{
+  margin-top:20px;
+  margin-bottom:25px;
+  font-size:34px;
+}
 
-  // ECG
-  html += ".ecg-container{width:100%;max-width:1000px;height:140px;margin:20px auto 40px auto;overflow:hidden;position:relative;}";
-  html += ".ecg-svg{width:100%;height:100%;}";
-  html += ".ecg-path{fill:none;stroke:#5c8de8;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;";
-  html += "stroke-dasharray:1200;stroke-dashoffset:1200;animation:ecgMove 3s linear infinite;}";
+/* ECG */
+.ecg-container{
+  width:100%;
+  max-width:1000px;
+  height:140px;
+  margin:20px auto 40px auto;
+}
+.ecg-path{
+  fill:none;
+  stroke:#5c8de8;
+  stroke-width:4;
+  stroke-dasharray:1200;
+  stroke-dashoffset:1200;
+  animation:ecgMove 3s linear infinite;
+}
 
-  html += "@keyframes ecgMove{from{stroke-dashoffset:1200;}to{stroke-dashoffset:0;}}";
+@keyframes ecgMove{
+  from{stroke-dashoffset:1200;}
+  to{stroke-dashoffset:0;}
+}
 
-  // Tarjetas
-  html += ".card{background:rgba(255,255,255,0.9);padding:18px;margin:15px auto;border-radius:16px;";
-  html += "max-width:420px;box-shadow:0 4px 18px rgba(0,0,0,0.08);}";
+/* Tarjetas */
+.card{
+  background:white;
+  padding:18px;
+  margin:15px auto;
+  border-radius:16px;
+  max-width:420px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
 
-  html += ".emergencia{color:red;font-size:24px;font-weight:bold;}";
-  html += ".normal{color:green;font-size:22px;font-weight:bold;}";
-  html += "small{color:#4a5f88;}";
-  html += "</style></head><body>";
+.emergencia{color:red;font-size:24px;font-weight:bold;}
+.normal{color:green;font-size:22px;font-weight:bold;}
+</style>
+</head>
 
-  // Signos médicos
-  html += "<div class='cross cross1'>+</div>";
-  html += "<div class='cross cross2'>+</div>";
-  html += "<div class='cross cross3'>+</div>";
-  html += "<div class='cross cross4'>+</div>";
+<body>
 
-  // Título
-  html += "<h1>Monitor de Salud ESP32</h1>";
+<!-- Fondo -->
+<div class="cross cross1">+</div>
+<div class="cross cross2">+</div>
+<div class="cross cross3">+</div>
+<div class="cross cross4">+</div>
 
-  // ECG animado
-  html += "<div class='ecg-container'>";
-  html += "<svg class='ecg-svg' viewBox='0 0 1000 140'>";
-  html += "<path class='ecg-path' d='M0 70 ";
-  html += "L120 70 L150 70 L180 35 L210 105 L240 20 ";
-  html += "L270 70 L400 70 L430 70 L460 40 ";
-  html += "L490 100 L520 25 L550 70 L1000 70'/>";
-  html += "</svg></div>";
+<h1>Monitor de Salud ESP32</h1>
 
-  // Paciente
-  html += "<div class='card'><h2>Paciente</h2>";
-  html += "<p><b>Nombre:</b> " + nombrePaciente + "</p>";
-  html += "<p><b>Edad:</b> " + edad + "</p>";
-  html += "<p><b>Tipo de sangre:</b> " + tipoSangre + "</p>";
-  html += "<p><b>Alergias:</b> " + alergias + "</p>";
-  html += "<p><b>Medicamentos:</b> " + medicamentos + "</p>";
-  html += "<p><b>EPS:</b> " + eps + "</p>";
-  html += "<p><b>Urgencias:</b> " + urgencias + "</p>";
-  html += "<p><b>Contacto:</b> " + contactoEmergencia + "</p>";
-  html += "</div>";
+<!-- ECG -->
+<div class="ecg-container">
+<svg viewBox="0 0 1000 140">
+<path class="ecg-path"
+d="M0 70 L120 70 L150 70 L180 35 L210 105 L240 20 L270 70 L400 70
+L430 70 L460 40 L490 100 L520 25 L550 70 L1000 70"/>
+</svg>
+</div>
 
-  // Hora
-  html += "<div class='card'><h2>Hora</h2><p>" + horaWeb + "</p></div>";
+<!-- Paciente -->
+<div class="card">
+<h2>Paciente</h2>
+<p><b>Nombre:</b> <span id="nombre">--</span></p>
+<p><b>Edad:</b> <span id="edad">--</span></p>
+<p><b>Tipo de sangre:</b> <span id="sangre">--</span></p>
+</div>
 
-  // BPM
-  html += "<div class='card'><h2>BPM</h2><p>" + String(bpmWeb) + "</p>";
-  html += "<small>Valores normales: 60 - 100</small></div>";
+<!-- BPM -->
+<div class="card">
+<h2>BPM</h2>
+<p><span id="bpm">--</span></p>
+</div>
 
-  // SpO2
-  html += "<div class='card'><h2>SpO2</h2><p>" + String(spo2Web) + " %</p>";
-  html += "<small>Valores normales: 95% - 100%</small></div>";
+<!-- SpO2 -->
+<div class="card">
+<h2>SpO2</h2>
+<p><span id="spo2">--</span> %</p>
+</div>
 
-  // Estado
-  html += "<div class='card'><h2>Estado</h2>";
-  if (emergenciaActiva) {
-    html += "<p class='emergencia'>EMERGENCIA</p>";
-  } else {
-    html += "<p class='normal'>NORMAL</p>";
-  }
-  html += "</div>";
+<!-- Estado -->
+<div class="card">
+<h2>Estado</h2>
+<p id="estado" class="normal">--</p>
+</div>
 
-  <script type="module">
+<!-- FIREBASE -->
+<script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// CONFIGURACIÓN (PEGA LA TUYA AQUÍ)
 const firebaseConfig = {
-  apiKey: "AIzaSyBmnBU4vvv5Sz9G6ywHJYQqiBnfe5Q2vu4",
-  authDomain: "monitor-salud-esp32.firebaseapp.com",
-  databaseURL: "https://monitor-salud-esp32-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "monitor-salud-esp32"
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+  projectId: "TU_PROYECTO"
 };
 
-// INICIALIZA FIREBASE
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
- <p>BPM: <span id="bpm">--</span></p>
- <p>SpO2: <span id="spo2">--</span></p>
- <p>Estado: <span id="estado">--</span></p>
-
-   // BPM
-const bpmRef = ref(db, 'medicion/bpm');
-onValue(bpmRef, (snapshot) => {
-  document.getElementById("bpm").innerText = snapshot.val();
+// PACIENTE
+onValue(ref(db, 'paciente/nombre'), snap=>{
+  document.getElementById("nombre").innerText = snap.val();
 });
 
-// SpO2
-const spo2Ref = ref(db, 'medicion/spo2');
-onValue(spo2Ref, (snapshot) => {
-  document.getElementById("spo2").innerText = snapshot.val();
+onValue(ref(db, 'paciente/edad'), snap=>{
+  document.getElementById("edad").innerText = snap.val();
 });
 
-// Estado
-const estadoRef = ref(db, 'medicion/estado');
-onValue(estadoRef, (snapshot) => {
-  document.getElementById("estado").innerText = snapshot.val();
+// MEDICIÓN
+onValue(ref(db, 'medicion/bpm'), snap=>{
+  document.getElementById("bpm").innerText = snap.val();
 });
 
-</script>  
+onValue(ref(db, 'medicion/spo2'), snap=>{
+  document.getElementById("spo2").innerText = snap.val();
+});
 
-  html += "</body></html>";
+onValue(ref(db, 'medicion/estado'), snap=>{
+  let estado = snap.val();
+  let elemento = document.getElementById("estado");
 
-  server.send(200, "text/html", html);
+  elemento.innerText = estado;
+
+  if(estado === "EMERGENCIA"){
+    elemento.className = "emergencia";
+  }else{
+    elemento.className = "normal";
+  }
+});
+
+</script>
+
+</body>
+</html>
