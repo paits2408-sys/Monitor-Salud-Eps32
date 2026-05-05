@@ -3,124 +3,504 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Monitor de Salud ESP32</title>
-
+<title>SmartSafe — Ficha de Emergencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-body{
-  font-family:Arial,sans-serif;
-  text-align:center;
-  margin:0;
-  padding:20px;
-  min-height:100vh;
-  color:#1a2c4f;
-  background:linear-gradient(135deg,#dceeff,#eef7ff);
-  overflow-x:hidden;
-  position:relative;
-}
+  :root {
+    --bg:        #0d0f14;
+    --surface:   #141720;
+    --surface2:  #1c2030;
+    --border:    rgba(255,255,255,0.07);
+    --red:       #c0392b;
+    --red-glow:  rgba(192,57,43,0.35);
+    --blue:      #2d6cdf;
+    --blue-soft: rgba(45,108,223,0.15);
+    --text:      #e8eaf0;
+    --muted:     #6b7280;
+    --accent:    #3b82f6;
+    --gold:      #f59e0b;
+  }
 
-/* Signos médicos */
-.cross{
-  position:fixed;
-  font-size:80px;
-  color:rgba(100,150,255,0.15);
-  font-weight:bold;
-  z-index:-1;
-}
-.cross1{top:30px;left:40px;}
-.cross2{top:80px;right:60px;}
-.cross3{bottom:120px;left:70px;}
-.cross4{bottom:60px;right:80px;}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-h1{
-  margin-top:20px;
-  margin-bottom:25px;
-  font-size:34px;
-}
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-/* ECG */
-.ecg-container{
-  width:100%;
-  max-width:1000px;
-  height:140px;
-  margin:20px auto 40px auto;
-}
-.ecg-path{
-  fill:none;
-  stroke:#5c8de8;
-  stroke-width:4;
-  stroke-dasharray:1200;
-  stroke-dashoffset:1200;
-  animation:ecgMove 3s linear infinite;
-}
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(160deg, var(--red) 0%, #7b1a13 100%);
+    padding: 28px 24px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 18px,
+      rgba(255,255,255,0.03) 18px,
+      rgba(255,255,255,0.03) 20px
+    );
+  }
+  .header-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 6px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+  }
 
-@keyframes ecgMove{
-  from{stroke-dashoffset:1200;}
-  to{stroke-dashoffset:0;}
-}
+  /* ── ECG ── */
+  .ecg-wrap {
+    background: var(--surface);
+    padding: 0 0 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ecg-svg { width: 100%; height: 80px; display: block; }
+  .ecg-path {
+    fill: none;
+    stroke: #ef4444;
+    stroke-width: 2.5;
+    stroke-dasharray: 1200;
+    stroke-dashoffset: 1200;
+    animation: ecgMove 2.8s linear infinite;
+    filter: drop-shadow(0 0 4px rgba(239,68,68,0.7));
+  }
+  @keyframes ecgMove {
+    from { stroke-dashoffset: 1200; }
+    to   { stroke-dashoffset: 0; }
+  }
 
-/* Tarjetas */
-.card{
-  background:white;
-  padding:18px;
-  margin:15px auto;
-  border-radius:16px;
-  max-width:420px;
-  box-shadow:0 4px 18px rgba(0,0,0,0.08);
-}
+  /* ── CONTENIDO ── */
+  .content {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-.emergencia{color:red;font-size:24px;font-weight:bold;}
-.normal{color:green;font-size:22px;font-weight:bold;}
+  /* ── FOTO DE PERFIL ── */
+  .profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 28px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    position: relative;
+  }
+  .avatar-ring {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 3px solid var(--red);
+    box-shadow: 0 0 0 6px var(--red-glow);
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: box-shadow 0.3s;
+  }
+  .avatar-ring:hover { box-shadow: 0 0 0 8px var(--red-glow); }
+  .avatar-ring img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 11px;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .avatar-ring:hover .avatar-overlay { opacity: 1; }
+  #fotoInput { display: none; }
+
+  .patient-name {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    text-align: center;
+  }
+  .badge-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+  }
+  .badge span { color: var(--text); font-weight: 500; }
+  .badge-rh {
+    background: var(--red);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .info-item { display: flex; flex-direction: column; gap: 2px; }
+  .info-key {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .info-val {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .info-val.alerta {
+    color: #f87171;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── MÉTRICAS EN VIVO ── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 16px 16px 0 0;
+  }
+  .metric-card.spo2::before { background: #10b981; }
+  .metric-icon { font-size: 22px; margin-bottom: 6px; }
+  .metric-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .metric-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 38px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1;
+  }
+  .metric-unit { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* ── ESTADO ── */
+  .estado-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: border-color 0.4s, background 0.4s;
+  }
+  .estado-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 4px rgba(16,185,129,0.25);
+    flex-shrink: 0;
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  .estado-dot.emergencia {
+    background: #ef4444;
+    box-shadow: 0 0 0 4px rgba(239,68,68,0.3);
+    animation: pulse 0.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.3); }
+  }
+  .estado-text { font-size: 16px; font-weight: 700; color: var(--text); }
+  .estado-sub  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── CONTACTOS ── */
+  .call-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    background: var(--blue);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 12px;
+  }
+  .call-btn:active { transform: scale(0.98); }
+  .call-btn:hover { background: #1d4ed8; }
+
+  /* ── QR ── */
+  .qr-section {
+    background: var(--surface);
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+  }
+  .qr-title {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  #qrcode {
+    display: inline-block;
+    background: #fff;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  #qrcode canvas, #qrcode img { display: block; }
+  .qr-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+  .qr-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: 600;
+    background: none;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 0 16px 32px;
+    letter-spacing: 1px;
+  }
+
+  /* ── ANIMACIÓN ENTRADA ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in:nth-child(1) { animation-delay: 0.05s; }
+  .fade-in:nth-child(2) { animation-delay: 0.13s; }
+  .fade-in:nth-child(3) { animation-delay: 0.21s; }
+  .fade-in:nth-child(4) { animation-delay: 0.29s; }
+  .fade-in:nth-child(5) { animation-delay: 0.37s; }
+  .fade-in:nth-child(6) { animation-delay: 0.45s; }
+  .fade-in:nth-child(7) { animation-delay: 0.53s; }
 </style>
 </head>
-
 <body>
 
-<!-- Fondo -->
-<div class="cross cross1">+</div>
-<div class="cross cross2">+</div>
-<div class="cross cross3">+</div>
-<div class="cross cross4">+</div>
-
-<h1>Monitor de Salud ESP32</h1>
-
-<!-- ECG -->
-<div class="ecg-container">
-<svg viewBox="0 0 1000 140">
-<path class="ecg-path"
-d="M0 70 L120 70 L150 70 L180 35 L210 105 L240 20 L270 70 L400 70
-L430 70 L460 40 L490 100 L520 25 L550 70 L1000 70"/>
-</svg>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-label">SmartSafe QR System</div>
+  <h1>DATOS DE EMERGENCIA</h1>
+  <div class="header-sub">Escaneo de Seguridad SmartSafe</div>
 </div>
 
-<!-- Paciente -->
-<div class="card">
-<h2>Paciente</h2>
-<p><b>Nombre:</b> <span id="nombre">--</span></p>
-<p><b>Edad:</b> <span id="edad">--</span></p>
-<p><b>Tipo de sangre:</b> <span id="sangre">--</span></p>
+<!-- ECG ANIMADO -->
+<div class="ecg-wrap">
+  <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+    <path class="ecg-path"
+      d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40
+         L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
+  </svg>
 </div>
 
-<!-- BPM -->
-<div class="card">
-<h2>BPM</h2>
-<p><span id="bpm">--</span></p>
+<!-- CONTENIDO -->
+<div class="content">
+
+  <!-- PERFIL -->
+  <div class="profile-section fade-in">
+    <div class="avatar-ring" onclick="document.getElementById('fotoInput').click()">
+      <img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='38' r='22' fill='%23374151'/%3E%3Cellipse cx='50' cy='85' rx='32' ry='22' fill='%23374151'/%3E%3C/svg%3E" alt="Foto">
+      <div class="avatar-overlay">📷 Cambiar foto</div>
+    </div>
+    <input type="file" id="fotoInput" accept="image/*">
+    <div class="patient-name" id="nombre">— —</div>
+    <div class="badge-row">
+      <div class="badge">Doc <span id="documento">--</span></div>
+      <div class="badge badge-rh" id="rh">O+</div>
+    </div>
+  </div>
+
+  <!-- INFO MÉDICA -->
+  <div class="card fade-in">
+    <div class="card-label">EPS / Seguro Médico</div>
+    <div class="info-row">
+      <div class="info-item">
+        <span class="info-key">Entidad</span>
+        <span class="info-val" id="eps">--</span>
+      </div>
+      <div class="info-item">
+        <span class="info-key">⚠ Alergias</span>
+        <span class="info-val alerta" id="alergias">--</span>
+      </div>
+      <div class="info-item">
+        <span class="info-key">💊 Medicamentos</span>
+        <span class="info-val" id="medicamentos">--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS EN VIVO -->
+  <div class="metrics-grid fade-in">
+    <div class="metric-card">
+      <div class="metric-icon">❤️</div>
+      <div class="metric-label">Frec. cardíaca</div>
+      <div class="metric-value" id="bpm">--</div>
+      <div class="metric-unit">BPM</div>
+    </div>
+    <div class="metric-card spo2">
+      <div class="metric-icon">🫁</div>
+      <div class="metric-label">Saturación O₂</div>
+      <div class="metric-value" id="spo2">--</div>
+      <div class="metric-unit">SpO₂ %</div>
+    </div>
+  </div>
+
+  <!-- ESTADO -->
+  <div class="estado-card fade-in" id="estadoCard">
+    <div class="estado-dot" id="estadoDot"></div>
+    <div>
+      <div class="estado-text" id="estadoText">Esperando datos...</div>
+      <div class="estado-sub">Estado en tiempo real · ESP32</div>
+    </div>
+  </div>
+
+  <!-- CONTACTOS -->
+  <div class="card fade-in">
+    <div class="card-label">Contacto de Emergencia</div>
+    <div class="info-row">
+      <div class="info-item">
+        <span class="info-key">Teléfono personal</span>
+        <span class="info-val" id="telPersonal">No disponible</span>
+      </div>
+      <div class="info-item">
+        <span class="info-key">Contacto de emergencia</span>
+        <span class="info-val" id="telEmergencia">--</span>
+      </div>
+    </div>
+    <a class="call-btn" href="tel:123">
+      📞 Llamar a Emergencias (123)
+    </a>
+  </div>
+
+  <!-- QR -->
+  <div class="qr-section fade-in">
+    <div class="qr-title">Tu Código QR de Emergencia</div>
+    <div id="qrcode"></div>
+    <div class="qr-hint">Presenta este código ante el personal médico<br>para acceder a tu ficha vital.</div>
+    <button class="qr-save" onclick="guardarQR()">📥 Guardar en el dispositivo</button>
+  </div>
+
 </div>
 
-<!-- SpO2 -->
-<div class="card">
-<h2>SpO2</h2>
-<p><span id="spo2">--</span> %</p>
-</div>
-
-<!-- Estado -->
-<div class="card">
-<h2>Estado</h2>
-<p id="estado" class="normal">--</p>
-</div>
+<!-- FOOTER -->
+<div class="footer">SmartSafe QR System © 2026</div>
 
 <!-- FIREBASE -->
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -132,43 +512,79 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const db  = getDatabase(app);
+
+const set = (id, val) => {
+  const el = document.getElementById(id);
+  if (el && val !== null) el.innerText = val;
+};
 
 // PACIENTE
-onValue(ref(db, 'paciente/nombre'), snap=>{
-  document.getElementById("nombre").innerText = snap.val();
-});
-
-onValue(ref(db, 'paciente/edad'), snap=>{
-  document.getElementById("edad").innerText = snap.val();
-});
-
-onValue(ref(db, 'paciente/sangre'), snap=>{
-  document.getElementById("sangre").innerText = snap.val();
-});  
+onValue(ref(db, 'paciente/nombre'),       s => set('nombre', s.val()));
+onValue(ref(db, 'paciente/edad'),         s => set('edad',   s.val()));
+onValue(ref(db, 'paciente/sangre'),       s => set('rh',     s.val()));
+onValue(ref(db, 'paciente/eps'),          s => set('eps',    s.val()));
+onValue(ref(db, 'paciente/alergias'),     s => set('alergias',    s.val()));
+onValue(ref(db, 'paciente/medicamentos'), s => set('medicamentos', s.val()));
+onValue(ref(db, 'paciente/contacto'),     s => set('telEmergencia', s.val()));
 
 // MEDICIÓN
-onValue(ref(db, 'medicion/bpm'), snap=>{
-  document.getElementById("bpm").innerText = snap.val();
-});
+onValue(ref(db, 'medicion/bpm'),  s => set('bpm',  s.val()));
+onValue(ref(db, 'medicion/spo2'), s => set('spo2', s.val()));
 
-onValue(ref(db, 'medicion/spo2'), snap=>{
-  document.getElementById("spo2").innerText = snap.val();
-});
+onValue(ref(db, 'medicion/estado'), s => {
+  const estado = s.val();
+  const dot    = document.getElementById('estadoDot');
+  const text   = document.getElementById('estadoText');
+  if (!estado) return;
 
-onValue(ref(db, 'medicion/estado'), snap=>{
-  let estado = snap.val();
-  let elemento = document.getElementById("estado");
-
-  elemento.innerText = estado;
-
-  if(estado === "EMERGENCIA"){
-    elemento.className = "emergencia";
-  }else{
-    elemento.className = "normal";
+  text.innerText = estado;
+  if (estado === 'EMERGENCIA') {
+    dot.classList.add('emergencia');
+  } else {
+    dot.classList.remove('emergencia');
   }
 });
+</script>
 
+<!-- FOTO + QR -->
+<script>
+// ── FOTO DE PERFIL ──
+document.getElementById('fotoInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('avatarImg').src = ev.target.result;
+    localStorage.setItem('smartsafe_foto', ev.target.result);
+  };
+  reader.readAsDataURL(file);
+});
+
+// Recuperar foto guardada
+const fotoGuardada = localStorage.getItem('smartsafe_foto');
+if (fotoGuardada) document.getElementById('avatarImg').src = fotoGuardada;
+
+// ── GENERAR QR ──
+const urlPagina = window.location.href.split('?')[0];
+const qr = new QRCode(document.getElementById('qrcode'), {
+  text: urlPagina,
+  width:  180,
+  height: 180,
+  colorDark:  '#000000',
+  colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.H
+});
+
+// ── GUARDAR QR ──
+function guardarQR() {
+  const canvas = document.querySelector('#qrcode canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'smartsafe-qr.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
 </script>
 
 </body>
