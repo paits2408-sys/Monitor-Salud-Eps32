@@ -424,8 +424,8 @@
     </div>
     <input type="file" id="fotoInput" accept="image/*">
     <div class="patient-name" id="nombre">— —</div>
-    <div class="Doc" id="documento">— —</div>
     <div class="badge-row">
+      <div class="badge">Doc <span id="documento">--</span></div>
       <div class="badge badge-rh" id="rh">O+</div>
     </div>
   </div>
@@ -527,6 +527,7 @@ const set = (id, val) => {
 
 // PACIENTE
 onValue(ref(db, 'paciente/nombre'),       s => set('nombre', s.val()));
+onValue(ref(db, 'paciente/documento'),    s => set('documento', s.val()));  
 onValue(ref(db, 'paciente/edad'),         s => set('edad',   s.val()));
 onValue(ref(db, 'paciente/sangre'),       s => set('rh',     s.val()));
 onValue(ref(db, 'paciente/eps'),          s => set('eps',    s.val()));
