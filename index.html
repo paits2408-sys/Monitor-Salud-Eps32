@@ -3,15 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-//titulo de la pagina  
 <title>SmartSafe — Ficha de Emergencia</title>
-  
-//Librerias de QR  
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-//variables globales para el estilo de la pagina 
 <style>
   :root {
     --bg:        #0d0f14;
@@ -38,7 +32,7 @@
     overflow-x: hidden;
   }
 
-  /* ── encabezado ── */
+  /* ── HEADER ── */
   .header {
     background: linear-gradient(160deg, var(--red) 0%, #7b1a13 100%);
     padding: 28px 24px 36px;
@@ -78,7 +72,7 @@
     margin-top: 4px;
   }
 
-  /* ── linea animada ── */
+  /* ── ECG ── */
   .ecg-wrap {
     background: var(--surface);
     padding: 0 0 4px;
@@ -122,8 +116,8 @@
     position: relative;
   }
   .avatar-ring {
-    width: 180px;
-    height: 180px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     background: var(--surface2);
     border: 3px solid var(--red);
@@ -397,9 +391,9 @@
 </head>
 <body>
 
-<!-- ENCABEZADO-->
+<!-- HEADER -->
 <div class="header">
-  <div class="header-label">SMARTSAFE - RELOJ MONITOR DE SALUD </div>
+  <div class="header-label">SmartSafe QR System</div>
   <h1>DATOS DE EMERGENCIA</h1>
   <div class="header-sub">Escaneo de Seguridad SmartSafe</div>
 </div>
@@ -527,7 +521,6 @@ const set = (id, val) => {
 
 // PACIENTE
 onValue(ref(db, 'paciente/nombre'),       s => set('nombre', s.val()));
-onValue(ref(db, 'paciente/documento'),    s => set('documento', s.val()));  
 onValue(ref(db, 'paciente/edad'),         s => set('edad',   s.val()));
 onValue(ref(db, 'paciente/sangre'),       s => set('rh',     s.val()));
 onValue(ref(db, 'paciente/eps'),          s => set('eps',    s.val()));
