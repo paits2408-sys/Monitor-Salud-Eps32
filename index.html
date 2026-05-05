@@ -478,7 +478,7 @@
       </div>
       <div class="info-item">
         <span class="info-key">Contacto de emergencia</span>
-        <span class="info-val" id="ContactoEmergencia">--</span>
+        <span class="info-val" id="contacto">--</span>
       </div>
     </div>
     <a class="call-btn" href="tel:123">
@@ -526,7 +526,7 @@ onValue(ref(db, 'paciente/sangre'),       s => set('rh',     s.val()));
 onValue(ref(db, 'paciente/eps'),          s => set('eps',    s.val()));
 onValue(ref(db, 'paciente/alergias'),     s => set('alergias',    s.val()));
 onValue(ref(db, 'paciente/medicamentos'), s => set('medicamentos', s.val()));
-onValue(ref(db, 'paciente/contacto'),     s => set('ContactoEmergencia', s.val()));
+onValue(ref(db, 'paciente/contacto'),     s => set('contacto', s.val()));
 
 // MEDICIÓN
 onValue(ref(db, 'medicion/bpm'),  s => set('bpm',  s.val()));
