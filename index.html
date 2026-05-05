@@ -3,9 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+//titulo de la pagina  
 <title>SmartSafe — Ficha de Emergencia</title>
+  
+//Librerias de QR  
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+//variables globales para el estilo de la pagina 
 <style>
   :root {
     --bg:        #0d0f14;
@@ -32,7 +38,7 @@
     overflow-x: hidden;
   }
 
-  /* ── HEADER ── */
+  /* ── encabezado ── */
   .header {
     background: linear-gradient(160deg, var(--red) 0%, #7b1a13 100%);
     padding: 28px 24px 36px;
@@ -72,7 +78,7 @@
     margin-top: 4px;
   }
 
-  /* ── ECG ── */
+  /* ── linea animada ── */
   .ecg-wrap {
     background: var(--surface);
     padding: 0 0 4px;
@@ -391,9 +397,9 @@
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ENCABEZADO-->
 <div class="header">
-  <div class="header-label">SmartSafe QR System</div>
+  <div class="header-label">SMARTSAFE - RELOJ MONITOR DE SALUD </div>
   <h1>DATOS DE EMERGENCIA</h1>
   <div class="header-sub">Escaneo de Seguridad SmartSafe</div>
 </div>
@@ -419,7 +425,8 @@
     <input type="file" id="fotoInput" accept="image/*">
     <div class="patient-name" id="nombre">— —</div>
     <div class="badge-row">
-      <div class="badge">Doc <span id="documento">--</span></div>
+      <div class="doc" id="documento">— —</div>
+
       <div class="badge badge-rh" id="rh">O+</div>
     </div>
   </div>
