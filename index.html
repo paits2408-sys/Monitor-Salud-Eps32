@@ -4,89 +4,168 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SmartSafe — Ficha de Emergencia</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
-    --bg:        #0d0f14;
-    --surface:   #141720;
-    --surface2:  #1c2030;
-    --border:    rgba(255,255,255,0.07);
-    --red:       #c0392b;
-    --red-glow:  rgba(192,57,43,0.35);
-    --blue:      #2d6cdf;
-    --blue-soft: rgba(45,108,223,0.15);
-    --text:      #e8eaf0;
-    --muted:     #6b7280;
-    --accent:    #3b82f6;
-    --gold:      #f59e0b;
+    --bg:          #080c18;
+    --bg2:         #0c1220;
+    --surface:     #0f1829;
+    --surface2:    #152035;
+    --border:      rgba(79,195,247,0.12);
+    --border2:     rgba(79,195,247,0.25);
+
+    --cyan:        #4fc3f7;
+    --cyan-dim:    rgba(79,195,247,0.15);
+    --cyan-glow:   rgba(79,195,247,0.35);
+    --blue:        #1a3a6b;
+    --blue-bright: #2563eb;
+    --purple:      #7c4dbc;
+    --purple-dim:  rgba(124,77,188,0.2);
+
+    --text:        #e2eeff;
+    --text-dim:    #8ba4c8;
+    --muted:       #4a6080;
+
+    --red:         #ef4444;
+    --green:       #22d3a5;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Exo 2', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
   }
+
+  /* ── FONDO CON CIRCUITOS ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,195,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,195,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(124,77,188,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(26,58,107,0.25) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 60% 20%, rgba(79,195,247,0.06) 0%, transparent 60%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .header, .ecg-wrap, .content, .footer { position: relative; z-index: 1; }
 
   /* ── HEADER ── */
   .header {
-    background: linear-gradient(160deg, var(--red) 0%, #7b1a13 100%);
-    padding: 28px 24px 36px;
+    background: linear-gradient(160deg, #0d1e3d 0%, #0a1628 60%, #150d2a 100%);
+    padding: 32px 24px 40px;
     text-align: center;
     position: relative;
     overflow: hidden;
+    border-bottom: 1px solid var(--border2);
   }
   .header::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 18px,
-      rgba(255,255,255,0.03) 18px,
-      rgba(255,255,255,0.03) 20px
-    );
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,195,247,0.1) 0%, transparent 70%);
   }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+  }
+
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .logo-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 0 20px rgba(79,195,247,0.2);
+  }
+  .logo-text { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
+  .logo-text .smart { color: var(--cyan); }
+  .logo-text .safe  { color: #ffffff; }
+
   .header-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 6px;
+    color: var(--cyan);
+    margin-bottom: 8px;
+    position: relative;
   }
   .header h1 {
-    font-size: 26px;
-    font-weight: 800;
+    font-size: 22px;
+    font-weight: 700;
     color: #fff;
-    letter-spacing: -0.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
   }
   .header-sub {
     font-size: 12px;
-    color: rgba(255,255,255,0.5);
-    margin-top: 4px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    position: relative;
+    font-weight: 300;
+    letter-spacing: 1px;
   }
 
   /* ── ECG ── */
   .ecg-wrap {
     background: var(--surface);
-    padding: 0 0 4px;
+    padding: 0;
     border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .ecg-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--bg) 0%, transparent 10%, transparent 90%, var(--bg) 100%);
+    z-index: 1;
+    pointer-events: none;
   }
   .ecg-svg { width: 100%; height: 80px; display: block; }
   .ecg-path {
     fill: none;
-    stroke: #ef4444;
+    stroke: var(--cyan);
     stroke-width: 2.5;
     stroke-dasharray: 1200;
     stroke-dashoffset: 1200;
     animation: ecgMove 2.8s linear infinite;
-    filter: drop-shadow(0 0 4px rgba(239,68,68,0.7));
+    filter: drop-shadow(0 0 6px rgba(79,195,247,0.8));
   }
   @keyframes ecgMove {
     from { stroke-dashoffset: 1200; }
@@ -100,86 +179,112 @@
     padding: 24px 16px 48px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
   }
 
-  /* ── FOTO DE PERFIL ── */
+  /* ── PERFIL ── */
   .profile-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    padding: 28px 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
+    gap: 14px;
+    padding: 30px 20px;
+    background: linear-gradient(160deg, var(--surface) 0%, var(--surface2) 100%);
+    border: 1px solid var(--border2);
     border-radius: 20px;
     position: relative;
+    overflow: hidden;
   }
+  .profile-section::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: 50%;
+    transform: translateX(-50%);
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(79,195,247,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .profile-section::after {
+    content: '';
+    position: absolute;
+    top: 10px; left: 10px;
+    width: 16px; height: 16px;
+    border-top: 2px solid var(--cyan);
+    border-left: 2px solid var(--cyan);
+    border-radius: 2px 0 0 0;
+  }
+  .corner-br {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    width: 16px; height: 16px;
+    border-bottom: 2px solid var(--cyan);
+    border-right: 2px solid var(--cyan);
+    border-radius: 0 0 2px 0;
+  }
+
   .avatar-ring {
     width: 110px;
     height: 110px;
     border-radius: 50%;
-    background: var(--surface2);
-    border: 3px solid var(--red);
-    box-shadow: 0 0 0 6px var(--red-glow);
+    background: var(--bg2);
+    border: 2px solid var(--cyan);
+    box-shadow: 0 0 0 4px rgba(79,195,247,0.12), 0 0 20px rgba(79,195,247,0.25), inset 0 0 20px rgba(79,195,247,0.05);
     overflow: hidden;
     cursor: pointer;
     position: relative;
-    transition: box-shadow 0.3s;
+    transition: box-shadow 0.3s, border-color 0.3s;
   }
-  .avatar-ring:hover { box-shadow: 0 0 0 8px var(--red-glow); }
-  .avatar-ring img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .avatar-ring:hover {
+    box-shadow: 0 0 0 6px rgba(79,195,247,0.2), 0 0 30px rgba(79,195,247,0.4);
+    border-color: #fff;
   }
+  .avatar-ring img { width: 100%; height: 100%; object-fit: cover; }
   .avatar-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(8,12,24,0.75);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.2s;
     font-size: 11px;
-    color: #fff;
+    color: var(--cyan);
     text-align: center;
     font-weight: 600;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
   }
   .avatar-ring:hover .avatar-overlay { opacity: 1; }
   #fotoInput { display: none; }
 
   .patient-name {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     color: #fff;
-    letter-spacing: -0.5px;
+    letter-spacing: 0.5px;
     text-align: center;
+    text-shadow: 0 0 20px rgba(79,195,247,0.3);
   }
-  .badge-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
   .badge {
-    background: var(--surface2);
-    border: 1px solid var(--border);
+    background: rgba(79,195,247,0.07);
+    border: 1px solid var(--border2);
     border-radius: 8px;
     padding: 6px 14px;
-    font-size: 13px;
-    font-family: 'DM Mono', monospace;
-    color: var(--muted);
+    font-size: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
   }
-  .badge span { color: var(--text); font-weight: 500; }
+  .badge span { color: var(--cyan); }
   .badge-rh {
-    background: var(--red);
-    border-color: transparent;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+    border: 1px solid rgba(124,77,188,0.5);
     color: #fff;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px;
+    box-shadow: 0 0 12px rgba(124,77,188,0.3);
   }
 
   /* ── CARD ── */
@@ -188,80 +293,65 @@
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 20px;
-  }
-  .card-label {
-    font-size: 10px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 14px;
-    font-weight: 600;
-  }
-  .info-row {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .info-item { display: flex; flex-direction: column; gap: 2px; }
-  .info-key {
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .info-val {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .info-val.alerta {
-    color: #f87171;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  /* ── MÉTRICAS EN VIVO ── */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .metric-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
     position: relative;
     overflow: hidden;
     transition: border-color 0.3s;
   }
+  .card:hover { border-color: var(--border2); }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
+  }
+  .card-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .info-row { display: flex; flex-direction: column; gap: 12px; }
+  .info-item { display: flex; flex-direction: column; gap: 3px; }
+  .info-key { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .info-val { font-size: 15px; font-weight: 600; color: var(--text); }
+  .info-val.alerta { color: #fbbf24; display: flex; align-items: center; gap: 6px; }
+
+  /* ── MÉTRICAS ── */
+  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .metric-card:hover { border-color: var(--border2); box-shadow: 0 0 20px rgba(79,195,247,0.08); }
   .metric-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--accent);
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue-bright), var(--cyan));
     border-radius: 16px 16px 0 0;
   }
-  .metric-card.spo2::before { background: #10b981; }
-  .metric-icon { font-size: 22px; margin-bottom: 6px; }
-  .metric-label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
+  .metric-card.spo2::before { background: linear-gradient(90deg, var(--purple), var(--green)); }
+  .metric-icon { font-size: 20px; margin-bottom: 8px; }
+  .metric-label { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
   .metric-value {
-    font-family: 'DM Mono', monospace;
-    font-size: 38px;
-    font-weight: 500;
-    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 40px;
+    color: var(--cyan);
     line-height: 1;
+    text-shadow: 0 0 15px rgba(79,195,247,0.4);
   }
-  .metric-unit { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .metric-card.spo2 .metric-value { color: var(--green); text-shadow: 0 0 15px rgba(34,211,165,0.4); }
+  .metric-unit { font-size: 11px; color: var(--muted); margin-top: 6px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
 
   /* ── ESTADO ── */
   .estado-card {
@@ -271,29 +361,38 @@
     padding: 18px 20px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    transition: border-color 0.4s, background 0.4s;
+    gap: 16px;
+    transition: border-color 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .estado-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
   }
   .estado-dot {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 0 4px rgba(16,185,129,0.25);
+    background: var(--green);
+    box-shadow: 0 0 0 4px rgba(34,211,165,0.15), 0 0 10px rgba(34,211,165,0.5);
     flex-shrink: 0;
     transition: background 0.3s, box-shadow 0.3s;
   }
   .estado-dot.emergencia {
-    background: #ef4444;
-    box-shadow: 0 0 0 4px rgba(239,68,68,0.3);
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(239,68,68,0.2), 0 0 15px rgba(239,68,68,0.6);
     animation: pulse 0.8s ease-in-out infinite;
   }
   @keyframes pulse {
     0%, 100% { transform: scale(1); }
-    50%       { transform: scale(1.3); }
+    50%       { transform: scale(1.4); }
   }
-  .estado-text { font-size: 16px; font-weight: 700; color: var(--text); }
-  .estado-sub  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .estado-text { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
+  .estado-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: 'Share Tech Mono', monospace; }
 
   /* ── CONTACTOS ── */
   .call-btn {
@@ -303,64 +402,106 @@
     gap: 10px;
     width: 100%;
     padding: 16px;
-    background: var(--blue);
-    border: none;
+    background: linear-gradient(135deg, var(--blue-bright) 0%, var(--blue) 100%);
+    border: 1px solid rgba(37,99,235,0.5);
     border-radius: 12px;
     color: #fff;
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     text-decoration: none;
-    transition: background 0.2s, transform 0.1s;
-    margin-top: 12px;
+    transition: all 0.2s;
+    margin-top: 14px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 20px rgba(37,99,235,0.3);
+    position: relative;
+    overflow: hidden;
   }
+  .call-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.4s;
+  }
+  .call-btn:hover::before { left: 100%; }
+  .call-btn:hover { box-shadow: 0 6px 28px rgba(37,99,235,0.5); transform: translateY(-1px); }
   .call-btn:active { transform: scale(0.98); }
-  .call-btn:hover { background: #1d4ed8; }
 
   /* ── QR ── */
   .qr-section {
     background: var(--surface);
-    border: 1px dashed rgba(255,255,255,0.15);
+    border: 1px solid var(--border2);
     border-radius: 16px;
-    padding: 24px;
+    padding: 28px 24px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .qr-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(79,195,247,0.05) 0%, transparent 70%);
   }
   .qr-title {
-    font-size: 11px;
-    letter-spacing: 2.5px;
+    font-size: 9px;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
+    color: var(--cyan);
+    margin-bottom: 20px;
+    font-weight: 600;
+    position: relative;
   }
   #qrcode {
     display: inline-block;
     background: #fff;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(79,195,247,0.2);
+    position: relative;
   }
-  #qrcode canvas, #qrcode img { display: block; }
-  .qr-hint {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 14px;
-    line-height: 1.5;
-  }
+  #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
+  .qr-hint { font-size: 12px; color: var(--muted); margin-top: 16px; line-height: 1.6; position: relative; }
   .qr-save {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     margin-top: 14px;
     font-size: 13px;
-    color: var(--accent);
+    color: var(--cyan);
     cursor: pointer;
     font-weight: 600;
     background: none;
     border: none;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Exo 2', sans-serif;
     text-decoration: underline;
-    text-underline-offset: 3px;
+    text-underline-offset: 4px;
+    letter-spacing: 0.5px;
+    position: relative;
+    transition: color 0.2s;
   }
+  .qr-save:hover { color: #fff; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border2));
+  }
+  .divider::after { background: linear-gradient(90deg, var(--border2), transparent); }
 
   /* ── FOOTER ── */
   .footer {
@@ -368,14 +509,18 @@
     font-size: 11px;
     color: var(--muted);
     padding: 0 16px 32px;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
   }
+  .footer span { color: var(--cyan); }
 
   /* ── ANIMACIÓN ENTRADA ── */
   .fade-in {
     opacity: 0;
-    transform: translateY(18px);
-    animation: fadeUp 0.5s ease forwards;
+    transform: translateY(20px);
+    animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
   }
   @keyframes fadeUp {
     to { opacity: 1; transform: translateY(0); }
@@ -387,15 +532,35 @@
   .fade-in:nth-child(5) { animation-delay: 0.37s; }
   .fade-in:nth-child(6) { animation-delay: 0.45s; }
   .fade-in:nth-child(7) { animation-delay: 0.53s; }
+
+  /* ── PUNTO DECORATIVO ── */
+  .dot-grid {
+    position: fixed;
+    top: 0; right: 0;
+    width: 200px; height: 200px;
+    background-image: radial-gradient(circle, rgba(79,195,247,0.15) 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse at top right, black 30%, transparent 70%);
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
 
+<div class="dot-grid"></div>
+
 <!-- HEADER -->
 <div class="header">
-  <div class="header-label">SmartSafe QR System</div>
-  <h1>DATOS DE EMERGENCIA</h1>
-  <div class="header-sub">Escaneo de Seguridad SmartSafe</div>
+  <div class="logo-wrap">
+    <div class="logo-icon">⚕</div>
+    <div class="logo-text">
+      <span class="smart">Smart</span><span class="safe">Safe</span>
+    </div>
+  </div>
+  <div class="header-label">Sistema QR de Emergencia</div>
+  <h1>Ficha de Emergencia</h1>
+  <div class="header-sub">Escaneo de Seguridad · SmartSafe v1.0</div>
 </div>
 
 <!-- ECG ANIMADO -->
@@ -412,20 +577,19 @@
 
   <!-- PERFIL -->
   <div class="profile-section fade-in">
+    <div class="corner-br"></div>
     <div class="avatar-ring" onclick="document.getElementById('fotoInput').click()">
-      <img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='38' r='22' fill='%23374151'/%3E%3Cellipse cx='50' cy='85' rx='32' ry='22' fill='%23374151'/%3E%3C/svg%3E" alt="Foto">
+      <img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='38' r='22' fill='%23152035'/%3E%3Cellipse cx='50' cy='85' rx='32' ry='22' fill='%23152035'/%3E%3C/svg%3E" alt="Foto">
       <div class="avatar-overlay">📷 Cambiar foto</div>
     </div>
     <input type="file" id="fotoInput" accept="image/*">
     <div class="patient-name" id="nombre">— —</div>
     <div class="badge-row">
-      <div class="badge">#Documento <span id="documento">--</span></div>
-      </div>
-    <div class="badge-row">
+      <div class="badge"># <span id="documento">--</span></div>
       <div class="badge">Edad <span id="edad">--</span></div>
-      </div>
+    </div>
     <div class="badge-row">
-      <div class="badge badge-rh">Tipo de Sangre <span id="rh">--</span></div>
+      <div class="badge badge-rh">Tipo de Sangre &nbsp;<span id="rh">--</span></div>
     </div>
   </div>
 
@@ -449,6 +613,8 @@
   </div>
 
   <!-- MÉTRICAS EN VIVO -->
+  <div class="divider fade-in">Métricas en vivo</div>
+
   <div class="metrics-grid fade-in">
     <div class="metric-card">
       <div class="metric-icon">❤️</div>
@@ -493,7 +659,7 @@
 
   <!-- QR -->
   <div class="qr-section fade-in">
-    <div class="qr-title">Tu Código QR MONITOR DE SALUD</div>
+    <div class="qr-title">Código QR · Monitor de Salud</div>
     <div id="qrcode"></div>
     <div class="qr-hint">Presenta este código ante el personal médico<br>para acceder a tu ficha vital.</div>
     <button class="qr-save" onclick="guardarQR()">📥 Guardar en el dispositivo</button>
@@ -501,8 +667,8 @@
 
 </div>
 
-<!-- TEXTO BASE -->
-<div class="footer">SmartSafe MONITOR DE SALUD</div>
+<!-- FOOTER -->
+<div class="footer"><span>Smart</span>Safe · Monitor de Salud · 2026</div>
 
 <!-- FIREBASE -->
 <script type="module">
@@ -567,7 +733,6 @@ document.getElementById('fotoInput').addEventListener('change', function(e) {
   reader.readAsDataURL(file);
 });
 
-// Recuperar foto guardada
 const fotoGuardada = localStorage.getItem('smartsafe_foto');
 if (fotoGuardada) document.getElementById('avatarImg').src = fotoGuardada;
 
@@ -577,7 +742,7 @@ const qr = new QRCode(document.getElementById('qrcode'), {
   text: urlPagina,
   width:  180,
   height: 180,
-  colorDark:  '#000000',
+  colorDark:  '#0a1628',
   colorLight: '#ffffff',
   correctLevel: QRCode.CorrectLevel.H
 });
