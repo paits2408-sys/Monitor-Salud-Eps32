@@ -7,722 +7,1045 @@
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-  :root {
-    --bg:          #080c18;
-    --bg2:         #0c1220;
-    --surface:     #0f1829;
-    --surface2:    #152035;
-    --border:      rgba(79,195,247,0.12);
-    --border2:     rgba(79,195,247,0.25);
+/* ════════════════════════════════════════
+   VARIABLES & RESET
+════════════════════════════════════════ */
+:root {
+  --bg:          #080c18;
+  --bg2:         #0c1220;
+  --surface:     #0f1829;
+  --surface2:    #152035;
+  --border:      rgba(79,195,247,0.12);
+  --border2:     rgba(79,195,247,0.28);
+  --cyan:        #4fc3f7;
+  --cyan-dim:    rgba(79,195,247,0.15);
+  --blue:        #1a3a6b;
+  --blue-bright: #2563eb;
+  --purple:      #7c4dbc;
+  --text:        #e2eeff;
+  --text-dim:    #8ba4c8;
+  --muted:       #4a6080;
+  --red:         #ef4444;
+  --green:       #22d3a5;
+  --gold:        #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Exo 2', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(79,195,247,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,195,247,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0; pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(124,77,188,0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(26,58,107,0.2) 0%, transparent 70%);
+  z-index: 0; pointer-events: none;
+}
 
-    --cyan:        #4fc3f7;
-    --cyan-dim:    rgba(79,195,247,0.15);
-    --cyan-glow:   rgba(79,195,247,0.35);
-    --blue:        #1a3a6b;
-    --blue-bright: #2563eb;
-    --purple:      #7c4dbc;
-    --purple-dim:  rgba(124,77,188,0.2);
+/* ════════════════════════════════════════
+   VISTAS (control de pantallas)
+════════════════════════════════════════ */
+.view { display: none; position: relative; z-index: 1; }
+.view.active { display: block; }
 
-    --text:        #e2eeff;
-    --text-dim:    #8ba4c8;
-    --muted:       #4a6080;
+/* ════════════════════════════════════════
+   HEADER COMPARTIDO
+════════════════════════════════════════ */
+.header {
+  background: linear-gradient(160deg, #0d1e3d 0%, #0a1628 60%, #150d2a 100%);
+  padding: 32px 24px 40px;
+  text-align: center;
+  position: relative; overflow: hidden;
+  border-bottom: 1px solid var(--border2);
+}
+.header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,195,247,0.1) 0%, transparent 70%);
+}
+.header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+}
+.logo-wrap {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; margin-bottom: 10px; position: relative;
+}
+.logo-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 0 20px rgba(79,195,247,0.2);
+}
+.logo-text { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
+.logo-text .smart { color: var(--cyan); }
+.logo-text .safe  { color: #fff; }
+.header-label { font-size: 10px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px; position: relative; }
+.header h1 { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 1px; text-transform: uppercase; position: relative; }
+.header-sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; position: relative; font-weight: 300; letter-spacing: 1px; }
 
-    --red:         #ef4444;
-    --green:       #22d3a5;
-  }
+/* ════════════════════════════════════════
+   ECG
+════════════════════════════════════════ */
+.ecg-wrap {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.ecg-wrap::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, transparent 10%, transparent 90%, var(--bg) 100%);
+  z-index: 1; pointer-events: none;
+}
+.ecg-svg { width: 100%; height: 80px; display: block; }
+.ecg-path {
+  fill: none; stroke: var(--cyan); stroke-width: 2.5;
+  stroke-dasharray: 1200; stroke-dashoffset: 1200;
+  animation: ecgMove 2.8s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(79,195,247,0.8));
+}
+@keyframes ecgMove { from { stroke-dashoffset: 1200; } to { stroke-dashoffset: 0; } }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ════════════════════════════════════════
+   CONTENIDO / CARDS
+════════════════════════════════════════ */
+.content {
+  max-width: 480px; margin: 0 auto;
+  padding: 24px 16px 48px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s;
+}
+.card:hover { border-color: var(--border2); }
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
+}
+.card-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--cyan); margin-bottom: 16px; font-weight: 600; }
+.info-row { display: flex; flex-direction: column; gap: 12px; }
+.info-item { display: flex; flex-direction: column; gap: 3px; }
+.info-key { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.info-val { font-size: 15px; font-weight: 600; color: var(--text); }
+.info-val.alerta { color: #fbbf24; }
 
-  body {
-    font-family: 'Exo 2', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-  }
+/* ════════════════════════════════════════
+   PERFIL
+════════════════════════════════════════ */
+.profile-section {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 30px 20px;
+  background: linear-gradient(160deg, var(--surface) 0%, var(--surface2) 100%);
+  border: 1px solid var(--border2); border-radius: 20px;
+  position: relative; overflow: hidden;
+}
+.profile-section::before {
+  content: '';
+  position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(79,195,247,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.profile-section::after {
+  content: '';
+  position: absolute; top: 10px; left: 10px;
+  width: 16px; height: 16px;
+  border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan);
+  border-radius: 2px 0 0 0;
+}
+.corner-br {
+  position: absolute; bottom: 10px; right: 10px;
+  width: 16px; height: 16px;
+  border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan);
+  border-radius: 0 0 2px 0;
+}
+.avatar-ring {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: var(--bg2); border: 2px solid var(--cyan);
+  box-shadow: 0 0 0 4px rgba(79,195,247,0.12), 0 0 20px rgba(79,195,247,0.25);
+  overflow: hidden; cursor: pointer; position: relative;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+.avatar-ring:hover { box-shadow: 0 0 0 6px rgba(79,195,247,0.2), 0 0 30px rgba(79,195,247,0.4); border-color: #fff; }
+.avatar-ring img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-overlay {
+  position: absolute; inset: 0; background: rgba(8,12,24,0.75);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+  font-size: 11px; color: var(--cyan); text-align: center;
+  font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+}
+.avatar-ring:hover .avatar-overlay { opacity: 1; }
+#fotoInput { display: none; }
+.patient-name { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-align: center; text-shadow: 0 0 20px rgba(79,195,247,0.3); }
+.badge-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.badge {
+  background: rgba(79,195,247,0.07); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 6px 14px;
+  font-size: 12px; font-family: 'Share Tech Mono', monospace;
+  color: var(--text-dim); letter-spacing: 0.5px;
+}
+.badge span { color: var(--cyan); }
+.badge-rh {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+  border: 1px solid rgba(124,77,188,0.5); color: #fff;
+  font-weight: 700; font-size: 13px;
+  box-shadow: 0 0 12px rgba(124,77,188,0.3);
+}
 
-  /* ── FONDO CON CIRCUITOS ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(79,195,247,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(79,195,247,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    z-index: 0;
-    pointer-events: none;
-  }
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(124,77,188,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(26,58,107,0.25) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 30% at 60% 20%, rgba(79,195,247,0.06) 0%, transparent 60%);
-    z-index: 0;
-    pointer-events: none;
-  }
+/* ════════════════════════════════════════
+   MÉTRICAS
+════════════════════════════════════════ */
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.metric-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 22px 16px;
+  text-align: center; position: relative; overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.metric-card:hover { border-color: var(--border2); box-shadow: 0 0 20px rgba(79,195,247,0.08); }
+.metric-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue-bright), var(--cyan));
+  border-radius: 16px 16px 0 0;
+}
+.metric-card.spo2::before { background: linear-gradient(90deg, var(--purple), var(--green)); }
+.metric-icon { font-size: 20px; margin-bottom: 8px; }
+.metric-label { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.metric-value { font-family: 'Share Tech Mono', monospace; font-size: 40px; color: var(--cyan); line-height: 1; text-shadow: 0 0 15px rgba(79,195,247,0.4); }
+.metric-card.spo2 .metric-value { color: var(--green); text-shadow: 0 0 15px rgba(34,211,165,0.4); }
+.metric-unit { font-size: 11px; color: var(--muted); margin-top: 6px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
 
-  .header, .ecg-wrap, .content, .footer { position: relative; z-index: 1; }
+/* ════════════════════════════════════════
+   ESTADO
+════════════════════════════════════════ */
+.estado-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px 20px;
+  display: flex; align-items: center; gap: 16px;
+  transition: border-color 0.4s; position: relative; overflow: hidden;
+}
+.estado-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
+}
+.estado-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgba(34,211,165,0.15), 0 0 10px rgba(34,211,165,0.5);
+  flex-shrink: 0; transition: background 0.3s, box-shadow 0.3s;
+}
+.estado-dot.emergencia {
+  background: var(--red);
+  box-shadow: 0 0 0 4px rgba(239,68,68,0.2), 0 0 15px rgba(239,68,68,0.6);
+  animation: pulse 0.8s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+.estado-text { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
+.estado-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: 'Share Tech Mono', monospace; }
 
-  /* ── HEADER ── */
-  .header {
-    background: linear-gradient(160deg, #0d1e3d 0%, #0a1628 60%, #150d2a 100%);
-    padding: 32px 24px 40px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    border-bottom: 1px solid var(--border2);
-  }
-  .header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,195,247,0.1) 0%, transparent 70%);
-  }
-  .header::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
-  }
+/* ════════════════════════════════════════
+   BOTÓN LLAMADA
+════════════════════════════════════════ */
+.call-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--blue-bright) 0%, var(--blue) 100%);
+  border: 1px solid rgba(37,99,235,0.5); border-radius: 12px;
+  color: #fff; font-family: 'Exo 2', sans-serif; font-size: 15px; font-weight: 700;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.2s; margin-top: 14px; letter-spacing: 0.5px;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.3);
+  position: relative; overflow: hidden;
+}
+.call-btn::before {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.4s;
+}
+.call-btn:hover::before { left: 100%; }
+.call-btn:hover { box-shadow: 0 6px 28px rgba(37,99,235,0.5); transform: translateY(-1px); }
 
-  .logo-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 10px;
-    position: relative;
-  }
-  .logo-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
-    border: 1px solid var(--border2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    box-shadow: 0 0 20px rgba(79,195,247,0.2);
-  }
-  .logo-text { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
-  .logo-text .smart { color: var(--cyan); }
-  .logo-text .safe  { color: #ffffff; }
+/* ════════════════════════════════════════
+   QR
+════════════════════════════════════════ */
+.qr-section {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 28px 24px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.qr-section::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(79,195,247,0.05) 0%, transparent 70%);
+}
+.qr-title { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--cyan); margin-bottom: 20px; font-weight: 600; position: relative; }
+#qrcode { display: inline-block; background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 0 30px rgba(79,195,247,0.2); position: relative; }
+#qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
+.qr-hint { font-size: 12px; color: var(--muted); margin-top: 16px; line-height: 1.6; position: relative; }
+.qr-save {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+  font-size: 13px; color: var(--cyan); cursor: pointer; font-weight: 600;
+  background: none; border: none; font-family: 'Exo 2', sans-serif;
+  text-decoration: underline; text-underline-offset: 4px;
+  letter-spacing: 0.5px; position: relative; transition: color 0.2s;
+}
+.qr-save:hover { color: #fff; }
 
-  .header-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--cyan);
-    margin-bottom: 8px;
-    position: relative;
-  }
-  .header h1 {
-    font-size: 22px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    position: relative;
-  }
-  .header-sub {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 6px;
-    position: relative;
-    font-weight: 300;
-    letter-spacing: 1px;
-  }
+/* ════════════════════════════════════════
+   DIVIDER
+════════════════════════════════════════ */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--muted); font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border2)); }
+.divider::after { background: linear-gradient(90deg, var(--border2), transparent); }
 
-  /* ── ECG ── */
-  .ecg-wrap {
-    background: var(--surface);
-    padding: 0;
-    border-bottom: 1px solid var(--border);
-    position: relative;
-    overflow: hidden;
-  }
-  .ecg-wrap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, var(--bg) 0%, transparent 10%, transparent 90%, var(--bg) 100%);
-    z-index: 1;
-    pointer-events: none;
-  }
-  .ecg-svg { width: 100%; height: 80px; display: block; }
-  .ecg-path {
-    fill: none;
-    stroke: var(--cyan);
-    stroke-width: 2.5;
-    stroke-dasharray: 1200;
-    stroke-dashoffset: 1200;
-    animation: ecgMove 2.8s linear infinite;
-    filter: drop-shadow(0 0 6px rgba(79,195,247,0.8));
-  }
-  @keyframes ecgMove {
-    from { stroke-dashoffset: 1200; }
-    to   { stroke-dashoffset: 0; }
-  }
+/* ════════════════════════════════════════
+   BOTÓN ADMIN FLOTANTE (vista pública)
+════════════════════════════════════════ */
+.fab-admin {
+  position: fixed; bottom: 28px; right: 20px; z-index: 100;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+  border: 1px solid var(--border2);
+  box-shadow: 0 4px 20px rgba(124,77,188,0.4);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.fab-admin:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(124,77,188,0.6); }
+.fab-tooltip {
+  position: fixed; bottom: 28px; right: 76px; z-index: 100;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 6px 12px;
+  font-size: 11px; color: var(--text-dim); letter-spacing: 1px;
+  white-space: nowrap; opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.fab-admin:hover + .fab-tooltip { opacity: 1; }
 
-  /* ── CONTENIDO ── */
-  .content {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 24px 16px 48px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+.footer { text-align: center; font-size: 11px; color: var(--muted); padding: 0 16px 32px; letter-spacing: 2px; text-transform: uppercase; position: relative; z-index: 1; }
+.footer span { color: var(--cyan); }
 
-  /* ── PERFIL ── */
-  .profile-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding: 30px 20px;
-    background: linear-gradient(160deg, var(--surface) 0%, var(--surface2) 100%);
-    border: 1px solid var(--border2);
-    border-radius: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .profile-section::before {
-    content: '';
-    position: absolute;
-    top: -40px; left: 50%;
-    transform: translateX(-50%);
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(79,195,247,0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .profile-section::after {
-    content: '';
-    position: absolute;
-    top: 10px; left: 10px;
-    width: 16px; height: 16px;
-    border-top: 2px solid var(--cyan);
-    border-left: 2px solid var(--cyan);
-    border-radius: 2px 0 0 0;
-  }
-  .corner-br {
-    position: absolute;
-    bottom: 10px; right: 10px;
-    width: 16px; height: 16px;
-    border-bottom: 2px solid var(--cyan);
-    border-right: 2px solid var(--cyan);
-    border-radius: 0 0 2px 0;
-  }
+/* ════════════════════════════════════════
+   ANIMACIONES ENTRADA
+════════════════════════════════════════ */
+.fade-in { opacity: 0; transform: translateY(20px); animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+.fade-in:nth-child(1){animation-delay:.05s}
+.fade-in:nth-child(2){animation-delay:.13s}
+.fade-in:nth-child(3){animation-delay:.21s}
+.fade-in:nth-child(4){animation-delay:.29s}
+.fade-in:nth-child(5){animation-delay:.37s}
+.fade-in:nth-child(6){animation-delay:.45s}
+.fade-in:nth-child(7){animation-delay:.53s}
+.fade-in:nth-child(8){animation-delay:.61s}
 
-  .avatar-ring {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    background: var(--bg2);
-    border: 2px solid var(--cyan);
-    box-shadow: 0 0 0 4px rgba(79,195,247,0.12), 0 0 20px rgba(79,195,247,0.25), inset 0 0 20px rgba(79,195,247,0.05);
-    overflow: hidden;
-    cursor: pointer;
-    position: relative;
-    transition: box-shadow 0.3s, border-color 0.3s;
-  }
-  .avatar-ring:hover {
-    box-shadow: 0 0 0 6px rgba(79,195,247,0.2), 0 0 30px rgba(79,195,247,0.4);
-    border-color: #fff;
-  }
-  .avatar-ring img { width: 100%; height: 100%; object-fit: cover; }
-  .avatar-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(8,12,24,0.75);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s;
-    font-size: 11px;
-    color: var(--cyan);
-    text-align: center;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .avatar-ring:hover .avatar-overlay { opacity: 1; }
-  #fotoInput { display: none; }
+/* ════════════════════════════════════════
+   ── VISTA LOGIN ──
+════════════════════════════════════════ */
+#view-login {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+}
+#view-login.active { display: flex; }
 
-  .patient-name {
-    font-size: 24px;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: 0.5px;
-    text-align: center;
-    text-shadow: 0 0 20px rgba(79,195,247,0.3);
-  }
-  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  .badge {
-    background: rgba(79,195,247,0.07);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-family: 'Share Tech Mono', monospace;
-    color: var(--text-dim);
-    letter-spacing: 0.5px;
-  }
-  .badge span { color: var(--cyan); }
-  .badge-rh {
-    background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
-    border: 1px solid rgba(124,77,188,0.5);
-    color: #fff;
-    font-weight: 700;
-    font-size: 13px;
-    box-shadow: 0 0 12px rgba(124,77,188,0.3);
-  }
+.login-body {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 32px 16px;
+}
+.login-card {
+  width: 100%; max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 24px;
+  padding: 40px 32px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(79,195,247,0.08);
+}
+.login-card::before {
+  content: '';
+  position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(79,195,247,0.07) 0%, transparent 70%);
+}
+.login-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+}
+.login-icon {
+  width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 24px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 0 30px rgba(79,195,247,0.15);
+  position: relative;
+}
+.login-title { font-size: 22px; font-weight: 800; color: #fff; text-align: center; margin-bottom: 6px; letter-spacing: -0.3px; }
+.login-sub { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 32px; letter-spacing: 1px; text-transform: uppercase; }
 
-  /* ── CARD ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s;
-  }
-  .card:hover { border-color: var(--border2); }
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
-  }
-  .card-label {
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--cyan);
-    margin-bottom: 16px;
-    font-weight: 600;
-  }
-  .info-row { display: flex; flex-direction: column; gap: 12px; }
-  .info-item { display: flex; flex-direction: column; gap: 3px; }
-  .info-key { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-  .info-val { font-size: 15px; font-weight: 600; color: var(--text); }
-  .info-val.alerta { color: #fbbf24; display: flex; align-items: center; gap: 6px; }
+.field-group { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+.field-wrap { display: flex; flex-direction: column; gap: 6px; }
+.field-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); font-weight: 600; }
+.field-input {
+  width: 100%; padding: 14px 16px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-family: 'Exo 2', sans-serif; font-size: 15px;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(79,195,247,0.1);
+}
+.field-input::placeholder { color: var(--muted); }
 
-  /* ── MÉTRICAS ── */
-  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .metric-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 22px 16px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
-  .metric-card:hover { border-color: var(--border2); box-shadow: 0 0 20px rgba(79,195,247,0.08); }
-  .metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--blue-bright), var(--cyan));
-    border-radius: 16px 16px 0 0;
-  }
-  .metric-card.spo2::before { background: linear-gradient(90deg, var(--purple), var(--green)); }
-  .metric-icon { font-size: 20px; margin-bottom: 8px; }
-  .metric-label { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-  .metric-value {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 40px;
-    color: var(--cyan);
-    line-height: 1;
-    text-shadow: 0 0 15px rgba(79,195,247,0.4);
-  }
-  .metric-card.spo2 .metric-value { color: var(--green); text-shadow: 0 0 15px rgba(34,211,165,0.4); }
-  .metric-unit { font-size: 11px; color: var(--muted); margin-top: 6px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+.btn-primary {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--blue-bright) 0%, #1d4ed8 100%);
+  border: none; border-radius: 12px;
+  color: #fff; font-family: 'Exo 2', sans-serif;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.35);
+}
+.btn-primary::before {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.4s;
+}
+.btn-primary:hover::before { left: 100%; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(37,99,235,0.5); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  /* ── ESTADO ── */
-  .estado-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: border-color 0.4s;
-    position: relative;
-    overflow: hidden;
-  }
-  .estado-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
-  }
-  .estado-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 0 4px rgba(34,211,165,0.15), 0 0 10px rgba(34,211,165,0.5);
-    flex-shrink: 0;
-    transition: background 0.3s, box-shadow 0.3s;
-  }
-  .estado-dot.emergencia {
-    background: var(--red);
-    box-shadow: 0 0 0 4px rgba(239,68,68,0.2), 0 0 15px rgba(239,68,68,0.6);
-    animation: pulse 0.8s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50%       { transform: scale(1.4); }
-  }
-  .estado-text { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
-  .estado-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: 'Share Tech Mono', monospace; }
+.login-back {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 20px; font-size: 12px; color: var(--muted);
+  cursor: pointer; transition: color 0.2s; background: none; border: none;
+  font-family: 'Exo 2', sans-serif; width: 100%;
+}
+.login-back:hover { color: var(--cyan); }
 
-  /* ── CONTACTOS ── */
-  .call-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, var(--blue-bright) 0%, var(--blue) 100%);
-    border: 1px solid rgba(37,99,235,0.5);
-    border-radius: 12px;
-    color: #fff;
-    font-family: 'Exo 2', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s;
-    margin-top: 14px;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 20px rgba(37,99,235,0.3);
-    position: relative;
-    overflow: hidden;
-  }
-  .call-btn::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    transition: left 0.4s;
-  }
-  .call-btn:hover::before { left: 100%; }
-  .call-btn:hover { box-shadow: 0 6px 28px rgba(37,99,235,0.5); transform: translateY(-1px); }
-  .call-btn:active { transform: scale(0.98); }
+.login-error {
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+  font-size: 13px; color: #f87171; text-align: center;
+  display: none;
+}
+.login-error.show { display: block; }
 
-  /* ── QR ── */
-  .qr-section {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 16px;
-    padding: 28px 24px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .qr-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(79,195,247,0.05) 0%, transparent 70%);
-  }
-  .qr-title {
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--cyan);
-    margin-bottom: 20px;
-    font-weight: 600;
-    position: relative;
-  }
-  #qrcode {
-    display: inline-block;
-    background: #fff;
-    padding: 12px;
-    border-radius: 12px;
-    box-shadow: 0 0 30px rgba(79,195,247,0.2);
-    position: relative;
-  }
-  #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
-  .qr-hint { font-size: 12px; color: var(--muted); margin-top: 16px; line-height: 1.6; position: relative; }
-  .qr-save {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 14px;
-    font-size: 13px;
-    color: var(--cyan);
-    cursor: pointer;
-    font-weight: 600;
-    background: none;
-    border: none;
-    font-family: 'Exo 2', sans-serif;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    letter-spacing: 0.5px;
-    position: relative;
-    transition: color 0.2s;
-  }
-  .qr-save:hover { color: #fff; }
+/* ════════════════════════════════════════
+   ── VISTA ADMIN ──
+════════════════════════════════════════ */
+#view-admin { min-height: 100vh; display: flex; flex-direction: column; }
+#view-admin.active { display: flex; }
 
-  /* ── DIVIDER ── */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--muted);
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border2));
-  }
-  .divider::after { background: linear-gradient(90deg, var(--border2), transparent); }
+.admin-header {
+  background: linear-gradient(160deg, #0a1628 0%, #0d1e3d 100%);
+  padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border2);
+  position: sticky; top: 0; z-index: 50;
+}
+.admin-header-left { display: flex; align-items: center; gap: 12px; }
+.admin-badge {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+  border: 1px solid rgba(124,77,188,0.4);
+  border-radius: 8px; padding: 4px 10px;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.9); font-weight: 600;
+}
+.admin-title { font-size: 16px; font-weight: 700; color: #fff; }
+.btn-logout {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 8px; padding: 8px 14px;
+  color: #f87171; font-family: 'Exo 2', sans-serif;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; letter-spacing: 0.5px;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); }
 
-  /* ── FOOTER ── */
-  .footer {
-    text-align: center;
-    font-size: 11px;
-    color: var(--muted);
-    padding: 0 16px 32px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    position: relative;
-    z-index: 1;
-  }
-  .footer span { color: var(--cyan); }
+.admin-body {
+  flex: 1; max-width: 600px; width: 100%;
+  margin: 0 auto; padding: 28px 16px 60px;
+  display: flex; flex-direction: column; gap: 20px;
+  position: relative; z-index: 1;
+}
 
-  /* ── ANIMACIÓN ENTRADA ── */
-  .fade-in {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
-  }
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .fade-in:nth-child(1) { animation-delay: 0.05s; }
-  .fade-in:nth-child(2) { animation-delay: 0.13s; }
-  .fade-in:nth-child(3) { animation-delay: 0.21s; }
-  .fade-in:nth-child(4) { animation-delay: 0.29s; }
-  .fade-in:nth-child(5) { animation-delay: 0.37s; }
-  .fade-in:nth-child(6) { animation-delay: 0.45s; }
-  .fade-in:nth-child(7) { animation-delay: 0.53s; }
+.admin-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 24px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s;
+}
+.admin-section:hover { border-color: var(--border2); }
+.admin-section::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
+.admin-section-title {
+  font-size: 13px; font-weight: 700; color: var(--cyan);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
 
-  /* ── PUNTO DECORATIVO ── */
-  .dot-grid {
-    position: fixed;
-    top: 0; right: 0;
-    width: 200px; height: 200px;
-    background-image: radial-gradient(circle, rgba(79,195,247,0.15) 1px, transparent 1px);
-    background-size: 20px 20px;
-    z-index: 0;
-    mask-image: radial-gradient(ellipse at top right, black 30%, transparent 70%);
-    pointer-events: none;
-  }
+.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.admin-grid.single { grid-template-columns: 1fr; }
+
+.admin-field { display: flex; flex-direction: column; gap: 6px; }
+.admin-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.admin-input, .admin-textarea {
+  width: 100%; padding: 12px 14px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-family: 'Exo 2', sans-serif; font-size: 14px;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.admin-input:focus, .admin-textarea:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(79,195,247,0.1);
+}
+.admin-input::placeholder, .admin-textarea::placeholder { color: var(--muted); }
+.admin-textarea { resize: vertical; min-height: 80px; }
+
+.btn-save {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border: none; border-radius: 12px;
+  color: #fff; font-family: 'Exo 2', sans-serif;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(5,150,105,0.3);
+}
+.btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(5,150,105,0.5); }
+.btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.save-status {
+  text-align: center; font-size: 13px; padding: 12px;
+  border-radius: 10px; margin-top: 12px;
+  display: none;
+}
+.save-status.ok  { background: rgba(34,211,165,0.1); border: 1px solid rgba(34,211,165,0.3); color: var(--green); display: block; }
+.save-status.err { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  color: #f87171; display: block; }
+
+/* Live indicators en admin */
+.live-row { display: flex; gap: 12px; }
+.live-chip {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.live-chip::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue-bright), var(--cyan));
+}
+.live-chip.spo2-chip::before { background: linear-gradient(90deg, var(--purple), var(--green)); }
+.live-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.live-value { font-family: 'Share Tech Mono', monospace; font-size: 28px; color: var(--cyan); }
+.live-chip.spo2-chip .live-value { color: var(--green); }
+.live-unit { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: 'Share Tech Mono', monospace; }
+
+.admin-estado-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; margin-top: 12px;
+}
+.admin-estado-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px rgba(34,211,165,0.6); flex-shrink: 0; transition: background 0.3s; }
+.admin-estado-dot.emergencia { background: var(--red); box-shadow: 0 0 8px rgba(239,68,68,0.6); animation: pulse 0.8s ease-in-out infinite; }
+.admin-estado-text { font-size: 13px; font-weight: 600; color: var(--text); }
+
+/* Spinner */
+.spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.7s linear infinite; vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Dot grid deco */
+.dot-grid {
+  position: fixed; top: 0; right: 0; width: 200px; height: 200px;
+  background-image: radial-gradient(circle, rgba(79,195,247,0.15) 1px, transparent 1px);
+  background-size: 20px 20px; z-index: 0;
+  mask-image: radial-gradient(ellipse at top right, black 30%, transparent 70%);
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
-
 <div class="dot-grid"></div>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="logo-wrap">
-    <div class="logo-icon">⚕</div>
-    <div class="logo-text">
-      <span class="smart">Smart</span><span class="safe">Safe</span>
-    </div>
-  </div>
-  <div class="header-label">Sistema QR SMART SAFE KATA Y SARA</div>
-  <h1>Ficha de Emergencia</h1>
-  <div class="header-sub">Escaneo de Seguridad · SmartSafe v1.0</div>
-</div>
+<!-- ══════════════════════════════════════════
+     VISTA PÚBLICA
+══════════════════════════════════════════ -->
+<div id="view-public" class="view active">
 
-<!-- ECG ANIMADO -->
-<div class="ecg-wrap">
-  <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
-    <path class="ecg-path"
-      d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40
-         L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
-  </svg>
-</div>
-
-<!-- CONTENIDO -->
-<div class="content">
-
-  <!-- PERFIL -->
-  <div class="profile-section fade-in">
-    <div class="corner-br"></div>
-    <div class="avatar-ring" onclick="document.getElementById('fotoInput').click()">
-      <img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='38' r='22' fill='%23152035'/%3E%3Cellipse cx='50' cy='85' rx='32' ry='22' fill='%23152035'/%3E%3C/svg%3E" alt="Foto">
-      <div class="avatar-overlay">📷 Cambiar foto</div>
+  <div class="header">
+    <div class="logo-wrap">
+      <div class="logo-icon">⚕</div>
+      <div class="logo-text"><span class="smart">Smart</span><span class="safe">Safe</span></div>
     </div>
-    <input type="file" id="fotoInput" accept="image/*">
-    <div class="patient-name" id="nombre">— —</div>
-    <div class="badge-row">
-      <div class="badge"># <span id="documento">--</span></div>
-      <div class="badge">Edad <span id="edad">--</span></div>
-    </div>
-    <div class="badge-row">
-      <div class="badge badge-rh">Tipo de Sangre &nbsp;<span id="rh">--</span></div>
-    </div>
+    <div class="header-label">Sistema QR de Emergencia</div>
+    <h1>Ficha de Emergencia</h1>
+    <div class="header-sub">Escaneo de Seguridad · SmartSafe v1.0</div>
   </div>
 
-  <!-- INFO MÉDICA -->
-  <div class="card fade-in">
-    <div class="card-label">EPS / Seguro Médico</div>
-    <div class="info-row">
-      <div class="info-item">
-        <span class="info-key">Entidad</span>
-        <span class="info-val" id="eps">--</span>
+  <div class="ecg-wrap">
+    <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+      <path class="ecg-path" d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40 L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
+    </svg>
+  </div>
+
+  <div class="content">
+
+    <div class="profile-section fade-in">
+      <div class="corner-br"></div>
+      <div class="avatar-ring" onclick="document.getElementById('fotoInput').click()">
+        <img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='38' r='22' fill='%23152035'/%3E%3Cellipse cx='50' cy='85' rx='32' ry='22' fill='%23152035'/%3E%3C/svg%3E" alt="Foto">
+        <div class="avatar-overlay">📷 Cambiar foto</div>
       </div>
-      <div class="info-item">
-        <span class="info-key">⚠ Alergias</span>
-        <span class="info-val alerta" id="alergias">--</span>
+      <input type="file" id="fotoInput" accept="image/*">
+      <div class="patient-name" id="nombre">— —</div>
+      <div class="badge-row">
+        <div class="badge"># <span id="documento">--</span></div>
+        <div class="badge">Edad <span id="edad">--</span></div>
       </div>
-      <div class="info-item">
-        <span class="info-key">💊 Medicamentos</span>
-        <span class="info-val" id="medicamentos">--</span>
+      <div class="badge-row">
+        <div class="badge badge-rh">Tipo de Sangre &nbsp;<span id="rh">--</span></div>
       </div>
     </div>
-  </div>
 
-  <!-- MÉTRICAS EN VIVO -->
-  <div class="divider fade-in">Métricas en vivo</div>
-
-  <div class="metrics-grid fade-in">
-    <div class="metric-card">
-      <div class="metric-icon">❤️</div>
-      <div class="metric-label">Frec. cardíaca</div>
-      <div class="metric-value" id="bpm">--</div>
-      <div class="metric-unit">BPM</div>
-    </div>
-    <div class="metric-card spo2">
-      <div class="metric-icon">🫁</div>
-      <div class="metric-label">Saturación O₂</div>
-      <div class="metric-value" id="spo2">--</div>
-      <div class="metric-unit">SpO₂ %</div>
-    </div>
-  </div>
-
-  <!-- ESTADO -->
-  <div class="estado-card fade-in" id="estadoCard">
-    <div class="estado-dot" id="estadoDot"></div>
-    <div>
-      <div class="estado-text" id="estadoText">Esperando datos...</div>
-      <div class="estado-sub">Estado en tiempo real · ESP32</div>
-    </div>
-  </div>
-
-  <!-- CONTACTOS -->
-  <div class="card fade-in">
-    <div class="card-label">Contacto de Emergencia</div>
-    <div class="info-row">
-      <div class="info-item">
-        <span class="info-key">Teléfono personal</span>
-        <span class="info-val" id="telPersonal">No disponible</span>
-      </div>
-      <div class="info-item">
-        <span class="info-key">Contacto de emergencia</span>
-        <span class="info-val" id="contacto">--</span>
+    <div class="card fade-in">
+      <div class="card-label">EPS / Seguro Médico</div>
+      <div class="info-row">
+        <div class="info-item">
+          <span class="info-key">Entidad</span>
+          <span class="info-val" id="eps">--</span>
+        </div>
+        <div class="info-item">
+          <span class="info-key">⚠ Alergias</span>
+          <span class="info-val alerta" id="alergias">--</span>
+        </div>
+        <div class="info-item">
+          <span class="info-key">💊 Medicamentos</span>
+          <span class="info-val" id="medicamentos">--</span>
+        </div>
+        <div class="info-item">
+          <span class="info-key">🏥 Urgencias</span>
+          <span class="info-val" id="urgencias">--</span>
+        </div>
       </div>
     </div>
-    <a class="call-btn" href="tel:123">
-      📞 Llamar a Emergencias (123)
-    </a>
+
+    <div class="divider fade-in">Métricas en vivo</div>
+
+    <div class="metrics-grid fade-in">
+      <div class="metric-card">
+        <div class="metric-icon">❤️</div>
+        <div class="metric-label">Frec. cardíaca</div>
+        <div class="metric-value" id="bpm">--</div>
+        <div class="metric-unit">BPM</div>
+      </div>
+      <div class="metric-card spo2">
+        <div class="metric-icon">🫁</div>
+        <div class="metric-label">Saturación O₂</div>
+        <div class="metric-value" id="spo2">--</div>
+        <div class="metric-unit">SpO₂ %</div>
+      </div>
+    </div>
+
+    <div class="estado-card fade-in">
+      <div class="estado-dot" id="estadoDot"></div>
+      <div>
+        <div class="estado-text" id="estadoText">Esperando datos...</div>
+        <div class="estado-sub">Estado en tiempo real · ESP32</div>
+      </div>
+    </div>
+
+    <div class="card fade-in">
+      <div class="card-label">Contacto de Emergencia</div>
+      <div class="info-row">
+        <div class="info-item">
+          <span class="info-key">Contacto de emergencia</span>
+          <span class="info-val" id="contacto">--</span>
+        </div>
+      </div>
+      <a class="call-btn" href="tel:123">📞 Llamar a Emergencias (123)</a>
+    </div>
+
+    <div class="qr-section fade-in">
+      <div class="qr-title">Código QR · Monitor de Salud</div>
+      <div id="qrcode"></div>
+      <div class="qr-hint">Presenta este código ante el personal médico<br>para acceder a tu ficha vital.</div>
+      <button class="qr-save" onclick="guardarQR()">📥 Guardar en el dispositivo</button>
+    </div>
+
   </div>
 
-  <!-- QR -->
-  <div class="qr-section fade-in">
-    <div class="qr-title">Código QR · Monitor de Salud</div>
-    <div id="qrcode"></div>
-    <div class="qr-hint">Presenta este código ante el personal médico<br>para acceder a tu ficha vital.</div>
-    <button class="qr-save" onclick="guardarQR()">📥 Guardar en el dispositivo</button>
+  <div class="footer"><span>Smart</span>Safe · Monitor de Salud · 2026</div>
+
+  <!-- Botón flotante admin -->
+  <div class="fab-admin" onclick="showLogin()" title="Admin">🔐</div>
+  <div class="fab-tooltip">Administrador</div>
+
+</div><!-- /view-public -->
+
+
+<!-- ══════════════════════════════════════════
+     VISTA LOGIN
+══════════════════════════════════════════ -->
+<div id="view-login" class="view">
+
+  <div class="header">
+    <div class="logo-wrap">
+      <div class="logo-icon">⚕</div>
+      <div class="logo-text"><span class="smart">Smart</span><span class="safe">Safe</span></div>
+    </div>
+    <div class="header-label">Acceso Administrador</div>
+    <h1>Panel de Control</h1>
+    <div class="header-sub">Solo personal autorizado</div>
   </div>
 
-</div>
+  <div class="ecg-wrap">
+    <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+      <path class="ecg-path" d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40 L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
+    </svg>
+  </div>
 
-<!-- FOOTER -->
-<div class="footer"><span>Smart</span>Safe · Monitor de Salud · 2026</div>
+  <div class="login-body">
+    <div class="login-card">
+      <div class="login-icon">🔐</div>
+      <div class="login-title">Acceso Seguro</div>
+      <div class="login-sub">SmartSafe · Administrador</div>
 
-<!-- FIREBASE -->
+      <div class="login-error" id="loginError">Credenciales incorrectas. Inténtalo de nuevo.</div>
+
+      <div class="field-group">
+        <div class="field-wrap">
+          <label class="field-label">Correo electrónico</label>
+          <input class="field-input" type="email" id="loginEmail" placeholder="admin@smartsafe.com" autocomplete="email">
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Contraseña</label>
+          <input class="field-input" type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btnLogin" onclick="doLogin()">
+        Ingresar al panel
+      </button>
+
+      <button class="login-back" onclick="showPublic()">
+        ← Volver a la ficha pública
+      </button>
+    </div>
+  </div>
+
+</div><!-- /view-login -->
+
+
+<!-- ══════════════════════════════════════════
+     VISTA ADMIN
+══════════════════════════════════════════ -->
+<div id="view-admin" class="view">
+
+  <div class="admin-header">
+    <div class="admin-header-left">
+      <div class="admin-badge">Admin</div>
+      <div class="admin-title">Panel SmartSafe</div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">⏻ Cerrar sesión</button>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- Métricas en vivo (solo lectura) -->
+    <div class="admin-section">
+      <div class="admin-section-title">📡 Métricas en vivo (ESP32)</div>
+      <div class="live-row">
+        <div class="live-chip">
+          <div class="live-label">Frecuencia cardíaca</div>
+          <div class="live-value" id="admin-bpm">--</div>
+          <div class="live-unit">BPM</div>
+        </div>
+        <div class="live-chip spo2-chip">
+          <div class="live-label">Saturación O₂</div>
+          <div class="live-value" id="admin-spo2">--</div>
+          <div class="live-unit">SpO₂ %</div>
+        </div>
+      </div>
+      <div class="admin-estado-row">
+        <div class="admin-estado-dot" id="admin-estadoDot"></div>
+        <div class="admin-estado-text" id="admin-estadoText">Esperando datos...</div>
+      </div>
+    </div>
+
+    <!-- Datos personales -->
+    <div class="admin-section">
+      <div class="admin-section-title">👤 Datos del Paciente</div>
+      <div class="admin-grid">
+        <div class="admin-field">
+          <label class="admin-label">Nombre completo</label>
+          <input class="admin-input" type="text" id="f-nombre" placeholder="Nombre Apellido">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Documento</label>
+          <input class="admin-input" type="text" id="f-documento" placeholder="Nº de documento">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Edad</label>
+          <input class="admin-input" type="text" id="f-edad" placeholder="Ej: 25 años">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Tipo de sangre</label>
+          <input class="admin-input" type="text" id="f-sangre" placeholder="Ej: O+">
+        </div>
+      </div>
+    </div>
+
+    <!-- Información médica -->
+    <div class="admin-section">
+      <div class="admin-section-title">🏥 Información Médica</div>
+      <div class="admin-grid">
+        <div class="admin-field">
+          <label class="admin-label">EPS / Seguro</label>
+          <input class="admin-input" type="text" id="f-eps" placeholder="Nombre de la EPS">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Clínica de urgencias</label>
+          <input class="admin-input" type="text" id="f-urgencias" placeholder="Clínica preferida">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Alergias</label>
+          <input class="admin-input" type="text" id="f-alergias" placeholder="Ej: Penicilina, Ninguna">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Medicamentos</label>
+          <input class="admin-input" type="text" id="f-medicamentos" placeholder="Medicamentos habituales">
+        </div>
+      </div>
+    </div>
+
+    <!-- Contacto -->
+    <div class="admin-section">
+      <div class="admin-section-title">📞 Contacto de Emergencia</div>
+      <div class="admin-grid single">
+        <div class="admin-field">
+          <label class="admin-label">Número de contacto</label>
+          <input class="admin-input" type="text" id="f-contacto" placeholder="+57 300 123 4567">
+        </div>
+      </div>
+    </div>
+
+    <!-- Guardar -->
+    <div class="admin-section">
+      <div class="admin-section-title">💾 Guardar en Firebase</div>
+      <button class="btn-save" id="btnSave" onclick="guardarDatos()">
+        Guardar todos los datos
+      </button>
+      <div class="save-status" id="saveStatus"></div>
+    </div>
+
+  </div>
+
+</div><!-- /view-admin -->
+
+
+<!-- ══════════════════════════════════════════
+     FIREBASE + LÓGICA
+══════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+                                                   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+// ── CONFIG ──
 const firebaseConfig = {
-  apiKey: "AIzaSyBmnBU4vvv5Sz9G6ywHJYQqiBnfe5Q2vu4",
-  authDomain: "monitor-salud-esp32.firebaseapp.com",
+  apiKey:      "AIzaSyBmnBU4vvv5Sz9G6ywHJYQqiBnfe5Q2vu4",
+  authDomain:  "monitor-salud-esp32.firebaseapp.com",
   databaseURL: "https://monitor-salud-esp32-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "monitor-salud-esp32"
+  projectId:   "monitor-salud-esp32"
 };
 
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getDatabase(app);
+const auth = getAuth(app);
 
-const set = (id, val) => {
-  const el = document.getElementById(id);
-  if (el && val !== null) el.innerText = val;
-};
+// ── HELPERS ──
+const setText = (id, val) => { const el = document.getElementById(id); if (el && val !== null && val !== undefined) el.innerText = val; };
+const setVal  = (id, val) => { const el = document.getElementById(id); if (el && val !== null && val !== undefined) el.value = val; };
 
-// PACIENTE
-onValue(ref(db, 'paciente/nombre'),       s => set('nombre', s.val()));
-onValue(ref(db, 'paciente/documento'),    s => set('documento', s.val()));
-onValue(ref(db, 'paciente/edad'),         s => set('edad',   s.val()));
-onValue(ref(db, 'paciente/sangre'),       s => set('rh',     s.val()));
-onValue(ref(db, 'paciente/eps'),          s => set('eps',    s.val()));
-onValue(ref(db, 'paciente/alergias'),     s => set('alergias',    s.val()));
-onValue(ref(db, 'paciente/medicamentos'), s => set('medicamentos', s.val()));
-onValue(ref(db, 'paciente/contacto'),     s => set('contacto', s.val()));
-onValue(ref(db, 'paciente/telPersonal'),  s => set('telPersonal', s.val()));
+// ── ESCUCHAR PACIENTE (pública + admin) ──
+onValue(ref(db, 'paciente'), snap => {
+  const d = snap.val() || {};
+  setText('nombre',       d.nombre        || '— —');
+  setText('documento',    d.documento      || '--');
+  setText('edad',         d.edad           || '--');
+  setText('rh',           d.sangre         || '--');
+  setText('eps',          d.eps            || '--');
+  setText('alergias',     d.alergias       || '--');
+  setText('medicamentos', d.medicamentos   || '--');
+  setText('urgencias',    d.urgencias      || '--');
+  setText('contacto',     d.contacto       || '--');
+  // Rellenar formulario admin
+  setVal('f-nombre',      d.nombre         || '');
+  setVal('f-documento',   d.documento      || '');
+  setVal('f-edad',        d.edad           || '');
+  setVal('f-sangre',      d.sangre         || '');
+  setVal('f-eps',         d.eps            || '');
+  setVal('f-urgencias',   d.urgencias      || '');
+  setVal('f-alergias',    d.alergias       || '');
+  setVal('f-medicamentos',d.medicamentos   || '');
+  setVal('f-contacto',    d.contacto       || '');
+});
 
-// MEDICIÓN
-onValue(ref(db, 'medicion/bpm'),  s => set('bpm',  s.val()));
-onValue(ref(db, 'medicion/spo2'), s => set('spo2', s.val()));
-
+// ── ESCUCHAR MEDICIÓN ──
+onValue(ref(db, 'medicion/bpm'),    s => { setText('bpm',  s.val()); setText('admin-bpm',  s.val()); });
+onValue(ref(db, 'medicion/spo2'),   s => { setText('spo2', s.val()); setText('admin-spo2', s.val()); });
 onValue(ref(db, 'medicion/estado'), s => {
   const estado = s.val();
-  const dot    = document.getElementById('estadoDot');
-  const text   = document.getElementById('estadoText');
   if (!estado) return;
+  // Pública
+  setText('estadoText', estado);
+  const dot = document.getElementById('estadoDot');
+  if (dot) estado === 'EMERGENCIA' ? dot.classList.add('emergencia') : dot.classList.remove('emergencia');
+  // Admin
+  setText('admin-estadoText', estado);
+  const adot = document.getElementById('admin-estadoDot');
+  if (adot) estado === 'EMERGENCIA' ? adot.classList.add('emergencia') : adot.classList.remove('emergencia');
+});
 
-  text.innerText = estado;
-  if (estado === 'EMERGENCIA') {
-    dot.classList.add('emergencia');
-  } else {
-    dot.classList.remove('emergencia');
+// ── AUTH STATE ──
+onAuthStateChanged(auth, user => {
+  if (user) {
+    // Sesión activa: si estaba en login, pasar a admin
+    if (document.getElementById('view-login').classList.contains('active')) showAdmin();
   }
 });
+
+// ── LOGIN ──
+window.doLogin = async () => {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn      = document.getElementById('btnLogin');
+  const errEl    = document.getElementById('loginError');
+
+  errEl.classList.remove('show');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Verificando...';
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    showAdmin();
+  } catch (e) {
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = 'Ingresar al panel';
+  }
+};
+
+// Permitir Enter en el formulario
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.doLogin();
+});
+
+// ── LOGOUT ──
+window.doLogout = async () => {
+  await signOut(auth);
+  showPublic();
+};
+
+// ── GUARDAR DATOS ──
+window.guardarDatos = async () => {
+  const btn    = document.getElementById('btnSave');
+  const status = document.getElementById('saveStatus');
+  status.className = 'save-status';
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Guardando...';
+
+  const datos = {
+    nombre:       document.getElementById('f-nombre').value.trim(),
+    documento:    document.getElementById('f-documento').value.trim(),
+    edad:         document.getElementById('f-edad').value.trim(),
+    sangre:       document.getElementById('f-sangre').value.trim(),
+    eps:          document.getElementById('f-eps').value.trim(),
+    urgencias:    document.getElementById('f-urgencias').value.trim(),
+    alergias:     document.getElementById('f-alergias').value.trim(),
+    medicamentos: document.getElementById('f-medicamentos').value.trim(),
+    contacto:     document.getElementById('f-contacto').value.trim(),
+  };
+
+  try {
+    await update(ref(db, 'paciente'), datos);
+    status.className = 'save-status ok';
+    status.innerText = '✅ Datos guardados correctamente en Firebase';
+  } catch (e) {
+    status.className = 'save-status err';
+    status.innerText = '❌ Error al guardar: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Guardar todos los datos';
+    setTimeout(() => { status.className = 'save-status'; }, 4000);
+  }
+};
+
+// ── QR ──
+const urlPagina = window.location.href.split('?')[0];
+new QRCode(document.getElementById('qrcode'), {
+  text: urlPagina, width: 180, height: 180,
+  colorDark: '#0a1628', colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.H
+});
+
+window.guardarQR = () => {
+  const canvas = document.querySelector('#qrcode canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'smartsafe-qr.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+};
+
 </script>
 
-<!-- FOTO + QR -->
+<!-- ── FOTO + NAVEGACIÓN (no-module) ── -->
 <script>
-// ── FOTO DE PERFIL ──
+// FOTO
 document.getElementById('fotoInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -733,30 +1056,29 @@ document.getElementById('fotoInput').addEventListener('change', function(e) {
   };
   reader.readAsDataURL(file);
 });
-
 const fotoGuardada = localStorage.getItem('smartsafe_foto');
 if (fotoGuardada) document.getElementById('avatarImg').src = fotoGuardada;
 
-// ── GENERAR QR ──
-const urlPagina = window.location.href.split('?')[0];
-const qr = new QRCode(document.getElementById('qrcode'), {
-  text: urlPagina,
-  width:  180,
-  height: 180,
-  colorDark:  '#0a1628',
-  colorLight: '#ffffff',
-  correctLevel: QRCode.CorrectLevel.H
-});
-
-// ── GUARDAR QR ──
-function guardarQR() {
-  const canvas = document.querySelector('#qrcode canvas');
-  if (!canvas) return;
-  const link = document.createElement('a');
-  link.download = 'smartsafe-qr.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+// NAVEGACIÓN
+function showPublic() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-public').classList.add('active');
+  window.scrollTo(0, 0);
 }
+function showLogin() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-login').classList.add('active');
+  window.scrollTo(0, 0);
+  setTimeout(() => document.getElementById('loginEmail').focus(), 300);
+}
+function showAdmin() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-admin').classList.add('active');
+  window.scrollTo(0, 0);
+}
+window.showPublic = showPublic;
+window.showLogin  = showLogin;
+window.showAdmin  = showAdmin;
 </script>
 
 </body>
