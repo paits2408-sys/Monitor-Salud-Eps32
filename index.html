@@ -372,7 +372,7 @@ body::after {
 ════════════════════════════════════════ */
 #view-login {
   min-height: 100vh;
-  display: flex; flex-direction: column;
+  flex-direction: column;
 }
 #view-login.active { display: flex; }
 
@@ -466,7 +466,7 @@ body::after {
 /* ════════════════════════════════════════
    ── VISTA ADMIN ──
 ════════════════════════════════════════ */
-#view-admin { min-height: 100vh; display: flex; flex-direction: column; }
+#view-admin { min-height: 100vh; flex-direction: column; }
 #view-admin.active { display: flex; }
 
 .admin-header {
@@ -611,7 +611,7 @@ body::after {
 <!-- ══════════════════════════════════════════
      VISTA PÚBLICA
 ══════════════════════════════════════════ -->
-<div id="view-public" class="view active">
+<div id="view-public" class="view">
 
   <div class="header">
     <div class="logo-wrap">
@@ -951,9 +951,13 @@ onValue(ref(db, 'medicion/estado'), s => {
 
 // ── AUTH STATE ──
 onAuthStateChanged(auth, user => {
-  if (user) {
-    // Sesión activa: si estaba en login, pasar a admin
+  // Ignorar sesiones anónimas (usadas por el ESP32)
+  if (user && !user.isAnonymous) {
     if (document.getElementById('view-login').classList.contains('active')) showAdmin();
+  }
+  // Siempre mostrar la vista pública al cargar
+  if (!document.querySelector('.view.active')) {
+    showPublic();
   }
 });
 
