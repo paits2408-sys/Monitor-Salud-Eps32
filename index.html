@@ -603,6 +603,90 @@ body::after {
   mask-image: radial-gradient(ellipse at top right, black 30%, transparent 70%);
   pointer-events: none;
 }
+
+/* ════════════════════════════════════════
+   ── VISTA REGISTRO ──
+════════════════════════════════════════ */
+#view-registro { min-height: 100vh; flex-direction: column; }
+#view-registro.active { display: flex; }
+
+.registro-steps {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 28px; position: relative;
+}
+.step {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  position: relative; z-index: 1;
+}
+.step-circle {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface2); border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--muted);
+  transition: all 0.3s;
+}
+.step.active .step-circle  { background: var(--cyan); border-color: var(--cyan); color: var(--bg); }
+.step.done  .step-circle   { background: var(--green); border-color: var(--green); color: var(--bg); }
+.step-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.step.active .step-label   { color: var(--cyan); }
+.step.done  .step-label    { color: var(--green); }
+.step-line {
+  width: 48px; height: 2px;
+  background: var(--border); margin: 0 4px; margin-bottom: 18px;
+  transition: background 0.3s;
+}
+.step-line.done { background: var(--green); }
+
+.strength-bar {
+  height: 4px; border-radius: 2px; margin-top: 6px;
+  background: var(--border); overflow: hidden;
+}
+.strength-fill {
+  height: 100%; border-radius: 2px;
+  transition: width 0.3s, background 0.3s;
+  width: 0%;
+}
+.strength-label { font-size: 10px; color: var(--muted); margin-top: 4px; text-align: right; }
+
+.req-list { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.req-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: var(--muted); transition: color 0.2s;
+}
+.req-item.ok { color: var(--green); }
+.req-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border2); flex-shrink: 0; transition: background 0.2s;
+}
+.req-item.ok .req-dot { background: var(--green); }
+
+.info-banner {
+  background: rgba(79,195,247,0.06); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+  font-size: 12px; color: var(--text-dim); line-height: 1.6;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.info-banner-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+.btn-secondary {
+  width: 100%; padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border2); border-radius: 12px;
+  color: var(--cyan); font-family: 'Exo 2', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; margin-top: 10px; letter-spacing: 0.5px;
+}
+.btn-secondary:hover { background: var(--cyan-dim); }
+
+.success-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+  border: 2px solid var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin: 0 auto 20px;
+  box-shadow: 0 0 30px rgba(34,211,165,0.3);
+}
+
 </style>
 </head>
 <body>
@@ -718,7 +802,7 @@ body::after {
   <div class="footer"><span>Smart</span>Safe · Monitor de Salud · 2026</div>
 
   <!-- Botón flotante admin -->
-  <div class="fab-admin" onclick="showLogin()" title="Admin">🔐</div>
+  <div class="fab-admin" id="fabAdmin" title="Admin">🔐</div>
   <div class="fab-tooltip">Administrador</div>
 
 </div><!-- /view-public -->
@@ -768,6 +852,9 @@ body::after {
         Ingresar al panel
       </button>
 
+      <button class="login-back" style="margin-top:10px" onclick="recuperarPassword()">
+        ¿Olvidaste tu contraseña? Recupérala por correo
+      </button>
       <button class="login-back" onclick="showPublic()">
         ← Volver a la ficha pública
       </button>
@@ -888,10 +975,11 @@ body::after {
      FIREBASE + LÓGICA
 ══════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-                                                   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeApp }                                    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, update, get }     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut,
+         onAuthStateChanged, createUserWithEmailAndPassword,
+         sendPasswordResetEmail }                           from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // ── CONFIG ──
 const firebaseConfig = {
@@ -951,15 +1039,191 @@ onValue(ref(db, 'medicion/estado'), s => {
 
 // ── AUTH STATE ──
 onAuthStateChanged(auth, user => {
-  // Ignorar sesiones anónimas (usadas por el ESP32)
   if (user && !user.isAnonymous) {
-    if (document.getElementById('view-login').classList.contains('active')) showAdmin();
-  }
-  // Siempre mostrar la vista pública al cargar
-  if (!document.querySelector('.view.active')) {
-    showPublic();
+    // Usuario real autenticado: ir al admin si viene del login
+    if (document.getElementById('view-login').classList.contains('active')) {
+      showAdmin();
+    }
   }
 });
+
+// ── VERIFICAR SI YA HAY ADMIN REGISTRADO ──
+async function verificarAdmin() {
+  try {
+    const snap = await get(ref(db, 'config/adminRegistrado'));
+    if (snap.exists() && snap.val() === true) {
+      showLogin();       // Ya hay admin → mostrar login
+    } else {
+      showRegistro();    // Primer uso → mostrar registro
+    }
+  } catch(e) {
+    showLogin();         // Si hay error de lectura, ir a login igual
+  }
+}
+
+// ── REGISTRO: verificar contraseña en tiempo real ──
+window.checkPassword = () => {
+  const pwd = document.getElementById('regPassword').value;
+  const fill = document.getElementById('strengthFill');
+  const label = document.getElementById('strengthLabel');
+  const reqLen   = document.getElementById('req-len');
+  const reqUpper = document.getElementById('req-upper');
+  const reqNum   = document.getElementById('req-num');
+
+  const hasLen   = pwd.length >= 8;
+  const hasUpper = /[A-Z]/.test(pwd);
+  const hasNum   = /[0-9]/.test(pwd);
+
+  reqLen.classList.toggle('ok',   hasLen);
+  reqUpper.classList.toggle('ok', hasUpper);
+  reqNum.classList.toggle('ok',   hasNum);
+
+  const score = [hasLen, hasUpper, hasNum].filter(Boolean).length;
+  const colors = ['#ef4444','#f59e0b','#22d3a5'];
+  const labels = ['Débil','Regular','Fuerte'];
+  const widths = ['33%','66%','100%'];
+
+  if (pwd.length === 0) {
+    fill.style.width = '0%';
+    label.textContent = 'Ingresa una contraseña';
+    label.style.color = 'var(--muted)';
+    return;
+  }
+  fill.style.width      = widths[score - 1] || '10%';
+  fill.style.background = score > 0 ? colors[score - 1] : '#ef4444';
+  label.textContent     = score > 0 ? labels[score - 1] : 'Muy débil';
+  label.style.color     = score > 0 ? colors[score - 1] : '#ef4444';
+};
+
+// ── REGISTRO: paso 1 → paso 2 ──
+window.regNextStep = () => {
+  const email = document.getElementById('regEmail').value.trim();
+  const pwd   = document.getElementById('regPassword').value;
+  const pwd2  = document.getElementById('regPassword2').value;
+  const err   = document.getElementById('regError');
+
+  err.classList.remove('show');
+
+  if (!email || !email.includes('@')) {
+    err.innerText = 'Ingresa un correo electrónico válido.';
+    err.classList.add('show'); return;
+  }
+  if (pwd.length < 8) {
+    err.innerText = 'La contraseña debe tener al menos 8 caracteres.';
+    err.classList.add('show'); return;
+  }
+  if (!/[A-Z]/.test(pwd)) {
+    err.innerText = 'La contraseña debe tener al menos una letra mayúscula.';
+    err.classList.add('show'); return;
+  }
+  if (!/[0-9]/.test(pwd)) {
+    err.innerText = 'La contraseña debe tener al menos un número.';
+    err.classList.add('show'); return;
+  }
+  if (pwd !== pwd2) {
+    err.innerText = 'Las contraseñas no coinciden.';
+    err.classList.add('show'); return;
+  }
+
+  // Ir al paso 2
+  document.getElementById('confirmEmail').innerText = email;
+  document.getElementById('reg-step1').style.display = 'none';
+  document.getElementById('reg-step2').style.display = 'block';
+  document.getElementById('step1').classList.replace('active','done');
+  document.getElementById('step1').querySelector('.step-circle').textContent = '✓';
+  document.getElementById('line1').classList.add('done');
+  document.getElementById('step2').classList.add('active');
+};
+
+// ── REGISTRO: volver al paso 1 ──
+window.regVolver = () => {
+  document.getElementById('reg-step2').style.display = 'none';
+  document.getElementById('reg-step1').style.display = 'block';
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.replace('done','active');
+  document.getElementById('step1').querySelector('.step-circle').textContent = '1';
+  document.getElementById('line1').classList.remove('done');
+  document.getElementById('regError2').classList.remove('show');
+};
+
+// ── REGISTRO: crear cuenta en Firebase ──
+window.doRegistro = async () => {
+  const email = document.getElementById('regEmail').value.trim();
+  const pwd   = document.getElementById('regPassword').value;
+  const btn   = document.getElementById('btnRegFinal');
+  const err   = document.getElementById('regError2');
+
+  err.classList.remove('show');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Creando cuenta...';
+
+  try {
+    // 1. Verificar de nuevo que no haya admin (doble seguro)
+    const snap = await get(ref(db, 'config/adminRegistrado'));
+    if (snap.exists() && snap.val() === true) {
+      err.innerText = 'Ya existe una cuenta de administrador registrada.';
+      err.classList.add('show');
+      btn.disabled = false;
+      btn.innerHTML = 'Crear mi cuenta';
+      return;
+    }
+
+    // 2. Crear usuario en Firebase Auth
+    await createUserWithEmailAndPassword(auth, email, pwd);
+
+    // 3. Marcar bandera en RTDB
+    await set(ref(db, 'config/adminRegistrado'), true);
+
+    // 4. Mostrar paso 3 (éxito)
+    document.getElementById('successEmail').innerText = email;
+    document.getElementById('reg-step2').style.display = 'none';
+    document.getElementById('reg-step3').style.display = 'block';
+    document.getElementById('step2').classList.replace('active','done');
+    document.getElementById('step2').querySelector('.step-circle').textContent = '✓';
+    document.getElementById('line2').classList.add('done');
+    document.getElementById('step3').classList.add('active');
+    document.getElementById('step3').querySelector('.step-circle').textContent = '✓';
+
+  } catch (e) {
+    let msg = 'Error al crear la cuenta. Intenta de nuevo.';
+    if (e.code === 'auth/email-already-in-use') msg = 'Este correo ya tiene una cuenta registrada.';
+    if (e.code === 'auth/invalid-email')         msg = 'El formato del correo no es válido.';
+    if (e.code === 'auth/weak-password')          msg = 'La contraseña es demasiado débil.';
+    err.innerText = msg;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = 'Crear mi cuenta';
+  }
+};
+
+// ── REGISTRO: ir al admin al terminar ──
+window.regTerminar = () => { showAdmin(); };
+
+// ── RECUPERAR CONTRASEÑA ──
+window.recuperarPassword = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    const err = document.getElementById('loginError');
+    err.innerText = 'Ingresa primero tu correo electrónico.';
+    err.style.color = '#fbbf24';
+    err.classList.add('show');
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    const err = document.getElementById('loginError');
+    err.innerText = '✅ Correo de recuperación enviado. Revisa tu bandeja de entrada.';
+    err.style.color = 'var(--green)';
+    err.style.background = 'rgba(34,211,165,0.1)';
+    err.style.borderColor = 'rgba(34,211,165,0.3)';
+    err.classList.add('show');
+  } catch(e) {
+    const err = document.getElementById('loginError');
+    err.innerText = 'No se encontró una cuenta con ese correo.';
+    err.style.color = '#f87171';
+    err.classList.add('show');
+  }
+};
 
 // ── LOGIN ──
 window.doLogin = async () => {
@@ -1045,6 +1309,9 @@ window.guardarQR = () => {
   link.click();
 };
 
+// Exponer verificarAdmin para uso desde scripts externos
+window._verificarAdmin = verificarAdmin;
+
 </script>
 
 <!-- ── FOTO + NAVEGACIÓN (no-module) ── -->
@@ -1084,6 +1351,153 @@ window.showPublic = showPublic;
 window.showLogin  = showLogin;
 window.showAdmin  = showAdmin;
 </script>
+
+
+<!-- ══════════════════════════════════════════
+     VISTA REGISTRO (primer uso)
+══════════════════════════════════════════ -->
+<div id="view-registro" class="view">
+
+  <div class="header">
+    <div class="logo-wrap">
+      <div class="logo-icon">⚕</div>
+      <div class="logo-text"><span class="smart">Smart</span><span class="safe">Safe</span></div>
+    </div>
+    <div class="header-label">Configuración inicial</div>
+    <h1>Crear Cuenta Admin</h1>
+    <div class="header-sub">Solo el primero en registrarse tendrá acceso al panel</div>
+  </div>
+
+  <div class="ecg-wrap">
+    <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+      <path class="ecg-path" d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40 L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
+    </svg>
+  </div>
+
+  <div class="login-body">
+    <div class="login-card" style="max-width:440px">
+
+      <!-- Pasos -->
+      <div class="registro-steps">
+        <div class="step active" id="step1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Cuenta</div>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step" id="step2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Confirmación</div>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step" id="step3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Listo</div>
+        </div>
+      </div>
+
+      <!-- ── PASO 1: Datos de la cuenta ── -->
+      <div id="reg-step1">
+        <div class="login-icon">🔐</div>
+        <div class="login-title">Tu cuenta de admin</div>
+        <div class="login-sub" style="margin-bottom:16px">SmartSafe · Configuración inicial</div>
+
+        <div class="info-banner">
+          <span class="info-banner-icon">ℹ️</span>
+          <span>Este correo y contraseña son los únicos que podrán acceder al panel de administración. Guárdalos en un lugar seguro.</span>
+        </div>
+
+        <div class="login-error" id="regError"></div>
+
+        <div class="field-group">
+          <div class="field-wrap">
+            <label class="field-label">Correo electrónico</label>
+            <input class="field-input" type="email" id="regEmail" placeholder="tu@correo.com" autocomplete="email">
+          </div>
+          <div class="field-wrap">
+            <label class="field-label">Contraseña</label>
+            <input class="field-input" type="password" id="regPassword" placeholder="Mínimo 8 caracteres" autocomplete="new-password" oninput="checkPassword()">
+            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            <div class="strength-label" id="strengthLabel">Ingresa una contraseña</div>
+            <div class="req-list">
+              <div class="req-item" id="req-len"><div class="req-dot"></div>Mínimo 8 caracteres</div>
+              <div class="req-item" id="req-upper"><div class="req-dot"></div>Al menos una mayúscula</div>
+              <div class="req-item" id="req-num"><div class="req-dot"></div>Al menos un número</div>
+            </div>
+          </div>
+          <div class="field-wrap">
+            <label class="field-label">Confirmar contraseña</label>
+            <input class="field-input" type="password" id="regPassword2" placeholder="Repite la contraseña" autocomplete="new-password">
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btnRegStep1" onclick="regNextStep()">
+          Continuar →
+        </button>
+        <button class="btn-secondary" onclick="showPublic()">← Volver a la ficha</button>
+      </div>
+
+      <!-- ── PASO 2: Confirmación ── -->
+      <div id="reg-step2" style="display:none">
+        <div class="login-icon" style="background:linear-gradient(135deg,#065f46,#047857);border-color:var(--green)">✅</div>
+        <div class="login-title">¿Todo correcto?</div>
+        <div class="login-sub" style="margin-bottom:20px">Revisa antes de confirmar</div>
+
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-label">Datos de la cuenta</div>
+          <div class="info-row">
+            <div class="info-item">
+              <span class="info-key">Correo</span>
+              <span class="info-val" id="confirmEmail" style="word-break:break-all">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">Contraseña</span>
+              <span class="info-val">••••••••</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-banner" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.2)">
+          <span class="info-banner-icon">⚠️</span>
+          <span>Una vez creada la cuenta, <strong>nadie más podrá registrarse</strong>. Solo tú podrás acceder al panel admin con estas credenciales.</span>
+        </div>
+
+        <div class="login-error" id="regError2"></div>
+
+        <button class="btn-primary" id="btnRegFinal" onclick="doRegistro()">
+          Crear mi cuenta
+        </button>
+        <button class="btn-secondary" onclick="regVolver()">← Volver a editar</button>
+      </div>
+
+      <!-- ── PASO 3: Éxito ── -->
+      <div id="reg-step3" style="display:none;text-align:center">
+        <div class="success-icon">✓</div>
+        <div class="login-title" style="margin-bottom:8px">¡Cuenta creada!</div>
+        <div class="login-sub" style="margin-bottom:20px;text-transform:none;letter-spacing:0;font-size:14px;color:var(--text-dim)">
+          Tu cuenta de administrador fue registrada exitosamente en SmartSafe.
+        </div>
+        <div class="card" style="text-align:left;margin-bottom:20px">
+          <div class="card-label">Recuerda</div>
+          <div class="info-row">
+            <div class="info-item">
+              <span class="info-key">Correo registrado</span>
+              <span class="info-val" id="successEmail" style="word-break:break-all;color:var(--cyan)">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">Acceso al panel</span>
+              <span class="info-val" style="font-size:13px">Botón 🔐 en la esquina inferior derecha de la ficha</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="regTerminar()">
+          Ir al panel de admin →
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /view-registro -->
 
 </body>
 </html>
