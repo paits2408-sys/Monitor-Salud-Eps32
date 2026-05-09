@@ -1316,7 +1316,7 @@ window._verificarAdmin = verificarAdmin;
 
 <!-- ── FOTO + NAVEGACIÓN (no-module) ── -->
 <script>
-// FOTO
+// ── FOTO DE PERFIL ──
 document.getElementById('fotoInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -1330,7 +1330,7 @@ document.getElementById('fotoInput').addEventListener('change', function(e) {
 const fotoGuardada = localStorage.getItem('smartsafe_foto');
 if (fotoGuardada) document.getElementById('avatarImg').src = fotoGuardada;
 
-// NAVEGACIÓN
+// ── NAVEGACIÓN ──
 function showPublic() {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-public').classList.add('active');
@@ -1347,9 +1347,32 @@ function showAdmin() {
   document.getElementById('view-admin').classList.add('active');
   window.scrollTo(0, 0);
 }
-window.showPublic = showPublic;
-window.showLogin  = showLogin;
-window.showAdmin  = showAdmin;
+function showRegistro() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-registro').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── BOTÓN FLOTANTE ADMIN ──
+// Espera a que el módulo Firebase exponga _verificarAdmin
+function onFabClick() {
+  if (window._verificarAdmin) {
+    window._verificarAdmin();
+  } else {
+    // Firebase todavía cargando, reintenta en 300ms
+    setTimeout(onFabClick, 300);
+  }
+}
+document.getElementById('fabAdmin').addEventListener('click', onFabClick);
+
+// ── EXPONER FUNCIONES GLOBALES ──
+window.showPublic   = showPublic;
+window.showLogin    = showLogin;
+window.showAdmin    = showAdmin;
+window.showRegistro = showRegistro;
+
+// ── MOSTRAR FICHA PÚBLICA AL CARGAR ──
+showPublic();
 </script>
 
 
