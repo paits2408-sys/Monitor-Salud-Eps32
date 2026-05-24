@@ -354,6 +354,227 @@ body::after {
 .footer span { color: var(--cyan); }
 
 /* ════════════════════════════════════════
+   ── VISTA LANDING ──
+════════════════════════════════════════ */
+#view-landing { min-height: 100vh; flex-direction: column; }
+#view-landing.active { display: flex; }
+
+.landing-hero {
+  background: linear-gradient(160deg, #0d1e3d 0%, #0a1628 55%, #150d2a 100%);
+  padding: 48px 24px 56px;
+  text-align: center;
+  position: relative; overflow: hidden;
+  border-bottom: 1px solid var(--border2);
+}
+.landing-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,195,247,0.1) 0%, transparent 70%);
+}
+.landing-hero::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+}
+.landing-logo-wrap {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; margin-bottom: 12px; position: relative;
+}
+.landing-logo-icon {
+  width: 60px; height: 60px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+  box-shadow: 0 0 30px rgba(79,195,247,0.25);
+}
+.landing-logo-text { font-size: 38px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+.landing-logo-text .smart { color: var(--cyan); }
+.landing-logo-text .safe  { color: #fff; }
+.landing-tagline {
+  font-size: 11px; font-weight: 600; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 16px; position: relative;
+}
+.landing-hero-title {
+  font-size: 26px; font-weight: 800; color: #fff;
+  line-height: 1.25; letter-spacing: -0.3px;
+  margin-bottom: 14px; position: relative;
+}
+.landing-hero-title .accent { color: var(--cyan); }
+.landing-hero-desc {
+  font-size: 14px; color: var(--text-dim); line-height: 1.7;
+  max-width: 380px; margin: 0 auto 28px; position: relative; font-weight: 300;
+}
+.landing-cta-row {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  position: relative;
+}
+.landing-btn-primary {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--blue-bright) 0%, #1d4ed8 100%);
+  border: none; border-radius: 12px;
+  color: #fff; font-family: 'Exo 2', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.35);
+  position: relative; overflow: hidden;
+}
+.landing-btn-primary::before {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.4s;
+}
+.landing-btn-primary:hover::before { left: 100%; }
+.landing-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,99,235,0.5); }
+
+.landing-btn-secondary {
+  padding: 14px 28px;
+  background: transparent; border: 1px solid var(--border2);
+  border-radius: 12px; color: var(--cyan);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.2s;
+}
+.landing-btn-secondary:hover { background: var(--cyan-dim); transform: translateY(-2px); }
+
+/* ─ ECG hero ─ */
+.landing-ecg { background: var(--surface); border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+.landing-ecg::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, transparent 8%, transparent 92%, var(--bg) 100%);
+  z-index: 1; pointer-events: none;
+}
+
+/* ─ Sección info del dispositivo ─ */
+.landing-body {
+  max-width: 520px; margin: 0 auto;
+  padding: 32px 16px 16px;
+  display: flex; flex-direction: column; gap: 16px;
+  position: relative; z-index: 1;
+}
+
+.landing-section-title {
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--cyan); font-weight: 600; text-align: center; margin-bottom: 4px;
+}
+.landing-section-h2 {
+  font-size: 20px; font-weight: 800; color: #fff;
+  text-align: center; margin-bottom: 20px; letter-spacing: -0.3px;
+}
+
+/* Feature cards */
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.feature-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 16px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  text-align: center;
+}
+.feature-card:hover { border-color: var(--border2); box-shadow: 0 0 20px rgba(79,195,247,0.07); }
+.feature-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue-bright), var(--cyan));
+}
+.feature-card.purple::before { background: linear-gradient(90deg, var(--purple), var(--cyan)); }
+.feature-card.green::before  { background: linear-gradient(90deg, var(--cyan), var(--green)); }
+.feature-card.gold::before   { background: linear-gradient(90deg, var(--gold), var(--purple)); }
+.feature-icon { font-size: 26px; margin-bottom: 10px; }
+.feature-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: 0.3px; }
+.feature-desc  { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+
+/* Texto bloque completo */
+.landing-info-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 22px 20px;
+  position: relative; overflow: hidden;
+}
+.landing-info-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
+}
+.landing-info-label {
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--cyan); font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.landing-info-text {
+  font-size: 13px; color: var(--text-dim); line-height: 1.75;
+}
+.landing-info-text strong { color: var(--text); }
+
+/* Team grid */
+.team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.team-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 14px;
+  text-align: center; position: relative; overflow: hidden;
+  transition: border-color 0.3s;
+}
+.team-card:hover { border-color: var(--border2); }
+.team-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--purple), var(--cyan));
+}
+.team-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+  border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin: 0 auto 10px;
+  box-shadow: 0 0 14px rgba(79,195,247,0.15);
+}
+.team-name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; letter-spacing: 0.3px; }
+.team-role { font-size: 10px; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* CTA final */
+.landing-final-cta {
+  background: linear-gradient(160deg, var(--surface) 0%, var(--surface2) 100%);
+  border: 1px solid var(--border2); border-radius: 20px;
+  padding: 32px 24px; text-align: center;
+  position: relative; overflow: hidden; margin-bottom: 8px;
+}
+.landing-final-cta::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(79,195,247,0.07) 0%, transparent 70%);
+}
+.landing-final-cta::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+}
+.cta-title { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 8px; position: relative; letter-spacing: -0.3px; }
+.cta-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 24px; position: relative; line-height: 1.6; }
+.cta-btns { display: flex; flex-direction: column; gap: 10px; position: relative; }
+.cta-btn-login {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--blue-bright) 0%, #1d4ed8 100%);
+  border: none; border-radius: 12px;
+  color: #fff; font-family: 'Exo 2', sans-serif;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.3);
+  position: relative; overflow: hidden;
+}
+.cta-btn-login::before {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.4s;
+}
+.cta-btn-login:hover::before { left: 100%; }
+.cta-btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(37,99,235,0.5); }
+.cta-btn-register {
+  width: 100%; padding: 15px;
+  background: transparent; border: 1px solid var(--border2);
+  border-radius: 12px; color: var(--cyan);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.2s;
+}
+.cta-btn-register:hover { background: var(--cyan-dim); }
+
+/* ════════════════════════════════════════
    ANIMACIONES ENTRADA
 ════════════════════════════════════════ */
 .fade-in { opacity: 0; transform: translateY(20px); animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards; }
@@ -691,6 +912,137 @@ body::after {
 </head>
 <body>
 <div class="dot-grid"></div>
+
+<!-- ══════════════════════════════════════════
+     VISTA LANDING (Bienvenida)
+══════════════════════════════════════════ -->
+<div id="view-landing" class="view">
+
+  <!-- HERO -->
+  <div class="landing-hero">
+    <div class="landing-logo-wrap">
+      <div class="landing-logo-icon">⚕</div>
+      <div class="landing-logo-text"><span class="smart">Smart</span><span class="safe">Safe</span></div>
+    </div>
+    <div class="landing-tagline">Pulsera Inteligente · Sistema de Emergencias</div>
+    <h1 class="landing-hero-title">
+      Tu seguridad, siempre<br><span class="accent">conectada</span>
+    </h1>
+    <p class="landing-hero-desc">
+      Monitoreo de salud en tiempo real con sensores inteligentes. Una pulsera conectada que puede salvar tu vida ante cualquier emergencia en Yumbo.
+    </p>
+    <div class="landing-cta-row">
+      <button class="landing-btn-primary" onclick="document.getElementById('landing-features').scrollIntoView({behavior:'smooth'})">Conocer más ↓</button>
+      <button class="landing-btn-secondary" onclick="goToAcceso()">Acceder →</button>
+    </div>
+  </div>
+
+  <!-- ECG decorativo -->
+  <div class="landing-ecg ecg-wrap">
+    <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+      <path class="ecg-path" d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40 L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
+    </svg>
+  </div>
+
+  <div class="landing-body">
+
+    <!-- FUNCIONALIDADES -->
+    <div id="landing-features" style="scroll-margin-top:20px">
+      <div class="landing-section-title">Funcionalidades</div>
+      <div class="landing-section-h2">¿Qué hace SmartSafe?</div>
+      <div class="feature-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon">❤️</div>
+          <div class="feature-title">Ritmo Cardíaco</div>
+          <div class="feature-desc">Monitoreo continuo de frecuencia cardíaca vía sensor ESP32 en tiempo real.</div>
+        </div>
+        <div class="feature-card purple fade-in">
+          <div class="feature-icon">🫁</div>
+          <div class="feature-title">Saturación O₂</div>
+          <div class="feature-desc">Medición constante de oxigenación en sangre con alerta automática si baja.</div>
+        </div>
+        <div class="feature-card green fade-in">
+          <div class="feature-icon">📡</div>
+          <div class="feature-title">Alertas en Tiempo Real</div>
+          <div class="feature-desc">Notificación inmediata a contactos de emergencia ante situaciones críticas.</div>
+        </div>
+        <div class="feature-card gold fade-in">
+          <div class="feature-icon">🔲</div>
+          <div class="feature-title">Código QR Vital</div>
+          <div class="feature-desc">QR con tu ficha médica accesible para personal de salud en segundos.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFORMACIÓN DEL DISPOSITIVO -->
+    <div class="landing-info-card fade-in">
+      <div class="landing-info-label">⌚ Dispositivo</div>
+      <div class="landing-info-text">
+        SmartSafe es una <strong>pulsera inteligente</strong> con sensores de temperatura, ritmo cardíaco y oxigenación, conectada vía <strong>ESP32</strong> a una plataforma web. Organiza tu información personal y datos de salud de forma segura para que las entidades autorizadas puedan acceder cuando sea necesario.<br><br>
+        Quienes escaneen tu código QR únicamente visualizan información esencial y un contacto de emergencia. <strong>SmartSafe no reemplaza la atención médica</strong>, sino que facilita alertas y una respuesta más rápida ante incidentes.
+      </div>
+    </div>
+
+    <!-- MISIÓN -->
+    <div class="landing-info-card fade-in">
+      <div class="landing-info-label">🎯 Misión</div>
+      <div class="landing-info-text">
+        Desarrollar una pulsera inteligente capaz de monitorear variables básicas de bienestar y conectarla a una plataforma web que permita apoyar la reacción ante situaciones de emergencia en <strong>Yumbo</strong>. El sistema organiza información personal y datos de salud básica de forma segura, ofreciendo una herramienta de apoyo que facilita alertas y una respuesta más rápida ante incidentes.
+      </div>
+    </div>
+
+    <!-- VISIÓN -->
+    <div class="landing-info-card fade-in">
+      <div class="landing-info-label">🔭 Visión</div>
+      <div class="landing-info-text">
+        Para el año <strong>2028</strong>, SmartSafe busca consolidarse en Yumbo como una herramienta confiable de apoyo en situaciones de emergencia, a través de una pulsera inteligente conectada a una plataforma digital que permita generar alertas oportunas y acceder rápidamente a información esencial del usuario. Nuestro propósito es seguir fortaleciendo el sistema para que sea más estable, accesible y adaptable a distintas comunidades, contribuyendo a entornos más seguros.
+      </div>
+    </div>
+
+    <!-- EQUIPO -->
+    <div>
+      <div class="landing-section-title">Equipo</div>
+      <div class="landing-section-h2">Quiénes somos</div>
+      <div class="team-grid fade-in">
+        <div class="team-card">
+          <div class="team-avatar">👩‍💻</div>
+          <div class="team-name">Integrante 1</div>
+          <div class="team-role">Desarrollo Web</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">👨‍🔧</div>
+          <div class="team-name">Integrante 2</div>
+          <div class="team-role">Hardware / ESP32</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">👩‍🔬</div>
+          <div class="team-name">Integrante 3</div>
+          <div class="team-role">Sensores &amp; IoT</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">👨‍🎨</div>
+          <div class="team-name">Integrante 4</div>
+          <div class="team-role">Diseño UX</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA FINAL: Login / Registro -->
+    <div class="landing-final-cta fade-in">
+      <div class="cta-title">¿Listo para comenzar?</div>
+      <div class="cta-sub">Inicia sesión para acceder al panel de administración o regístrate si es tu primera vez.</div>
+      <div class="cta-btns">
+        <button class="cta-btn-login" onclick="onFabClick()">🔐 Iniciar Sesión</button>
+        <button class="cta-btn-register" onclick="goToRegistro()">✍️ Registrarse</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer"><span>Smart</span>Safe · Yumbo, Colombia · 2026</div>
+
+</div><!-- /view-landing -->
+
 
 <!-- ══════════════════════════════════════════
      VISTA PÚBLICA
@@ -1331,6 +1683,11 @@ const fotoGuardada = localStorage.getItem('smartsafe_foto');
 if (fotoGuardada) document.getElementById('avatarImg').src = fotoGuardada;
 
 // ── NAVEGACIÓN ──
+function showLanding() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-landing').classList.add('active');
+  window.scrollTo(0, 0);
+}
 function showPublic() {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-public').classList.add('active');
@@ -1352,6 +1709,8 @@ function showRegistro() {
   document.getElementById('view-registro').classList.add('active');
   window.scrollTo(0, 0);
 }
+function goToAcceso() { onFabClick(); }
+function goToRegistro() { showRegistro(); }
 
 // ── BOTÓN FLOTANTE ADMIN ──
 // Espera a que el módulo Firebase exponga _verificarAdmin
@@ -1366,13 +1725,16 @@ function onFabClick() {
 document.getElementById('fabAdmin').addEventListener('click', onFabClick);
 
 // ── EXPONER FUNCIONES GLOBALES ──
+window.showLanding  = showLanding;
 window.showPublic   = showPublic;
 window.showLogin    = showLogin;
 window.showAdmin    = showAdmin;
 window.showRegistro = showRegistro;
+window.goToAcceso   = goToAcceso;
+window.goToRegistro = goToRegistro;
 
-// ── MOSTRAR FICHA PÚBLICA AL CARGAR ──
-showPublic();
+// ── MOSTRAR LANDING AL CARGAR ──
+showLanding();
 </script>
 
 
