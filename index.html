@@ -358,6 +358,12 @@ body::after {
 ════════════════════════════════════════ */
 #view-landing { min-height: 100vh; flex-direction: column; }
 #view-landing.active { display: flex; }
+#view-inicio { min-height: 100vh; flex-direction: column; }
+#view-inicio.active { display: flex; }
+#view-info { min-height: 100vh; flex-direction: column; }
+#view-info.active { display: flex; }
+#view-acceso { min-height: 100vh; flex-direction: column; }
+#view-acceso.active { display: flex; }
 
 .landing-hero {
   background: linear-gradient(160deg, #0d1e3d 0%, #0a1628 55%, #150d2a 100%);
@@ -908,6 +914,50 @@ body::after {
   box-shadow: 0 0 30px rgba(34,211,165,0.3);
 }
 
+
+/* ─ Hero image upload ─ */
+.hero-img-wrap {
+  width: 120px; height: 120px; border-radius: 20px;
+  margin: 0 auto 16px;
+  background: var(--surface2); border: 2px solid var(--border2);
+  box-shadow: 0 0 28px rgba(79,195,247,0.18);
+  overflow: hidden; cursor: pointer; position: relative;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+.hero-img-wrap:hover { box-shadow: 0 0 36px rgba(79,195,247,0.35); border-color: var(--cyan); }
+.hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-img-overlay {
+  position: absolute; inset: 0;
+  background: rgba(8,12,24,0.78);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+  font-size: 11px; color: var(--cyan); font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase; text-align: center;
+}
+.hero-img-wrap:hover .hero-img-overlay { opacity: 1; }
+
+/* Default hero image placeholder (wristband icon) */
+.hero-img-wrap img[src=""] {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%230f1829'/%3E%3Ctext x='60' y='72' font-size='52' text-anchor='middle'%3E⌚%3C/text%3E%3C/svg%3E");
+}
+
+/* ─ Outline button for hero ─ */
+.landing-btn-outline {
+  padding: 14px 22px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 12px;
+  color: rgba(255,255,255,0.7);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.2s;
+}
+.landing-btn-outline:hover { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+
+/* ─ Nav button row at bottom of pages 2 & 3 ─ */
+.nav-btn-row {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 8px;
+}
 </style>
 </head>
 <body>
@@ -916,14 +966,24 @@ body::after {
 <!-- ══════════════════════════════════════════
      VISTA LANDING (Bienvenida)
 ══════════════════════════════════════════ -->
-<div id="view-landing" class="view">
+<!-- ══════════════════════════════════════════
+     VISTA 1: INICIO (Hero)
+══════════════════════════════════════════ -->
+<div id="view-inicio" class="view">
 
-  <!-- HERO -->
   <div class="landing-hero">
     <div class="landing-logo-wrap">
       <div class="landing-logo-icon">⚕</div>
       <div class="landing-logo-text"><span class="smart">Smart</span><span class="safe">Safe</span></div>
     </div>
+
+    <!-- Imagen del equipo / dispositivo cargable -->
+    <div class="hero-img-wrap" onclick="document.getElementById('heroImgInput').click()" title="Toca para cambiar imagen">
+      <img id="heroImg" src="" alt="SmartSafe">
+      <div class="hero-img-overlay">📷 Cambiar imagen</div>
+    </div>
+    <input type="file" id="heroImgInput" accept="image/*" style="display:none">
+
     <div class="landing-tagline">Pulsera Inteligente · Sistema de Emergencias</div>
     <h1 class="landing-hero-title">
       Tu seguridad, siempre<br><span class="accent">conectada</span>
@@ -932,12 +992,37 @@ body::after {
       Monitoreo de salud en tiempo real con sensores inteligentes. Una pulsera conectada que puede salvar tu vida ante cualquier emergencia en Yumbo.
     </p>
     <div class="landing-cta-row">
-      <button class="landing-btn-primary" onclick="document.getElementById('landing-features').scrollIntoView({behavior:'smooth'})">Conocer más ↓</button>
-      <button class="landing-btn-secondary" onclick="goToAcceso()">Acceder →</button>
+      <button class="landing-btn-primary" onclick="showInfo()">Conocer más ↓</button>
+      <button class="landing-btn-secondary" onclick="showAcceso()">Acceder →</button>
+      <button class="landing-btn-outline" onclick="showPublic()">Ficha Pública</button>
     </div>
   </div>
 
-  <!-- ECG decorativo -->
+  <div class="landing-ecg ecg-wrap">
+    <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+      <path class="ecg-path" d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40 L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
+    </svg>
+  </div>
+
+  <div class="footer"><span>Smart</span>Safe · Yumbo, Colombia · 2026</div>
+
+</div><!-- /view-inicio -->
+
+
+<!-- ══════════════════════════════════════════
+     VISTA 2: INFORMACIÓN (Conocer más)
+══════════════════════════════════════════ -->
+<div id="view-info" class="view">
+
+  <div class="landing-hero" style="padding-bottom:36px">
+    <div class="landing-logo-wrap">
+      <div class="landing-logo-icon">⚕</div>
+      <div class="landing-logo-text"><span class="smart">Smart</span><span class="safe">Safe</span></div>
+    </div>
+    <div class="landing-tagline">Conoce el proyecto</div>
+    <h1 class="landing-hero-title" style="font-size:22px">Tecnología al servicio<br><span class="accent">de tu bienestar</span></h1>
+  </div>
+
   <div class="landing-ecg ecg-wrap">
     <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
       <path class="ecg-path" d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40 L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
@@ -947,7 +1032,7 @@ body::after {
   <div class="landing-body">
 
     <!-- FUNCIONALIDADES -->
-    <div id="landing-features" style="scroll-margin-top:20px">
+    <div>
       <div class="landing-section-title">Funcionalidades</div>
       <div class="landing-section-h2">¿Qué hace SmartSafe?</div>
       <div class="feature-grid">
@@ -974,7 +1059,7 @@ body::after {
       </div>
     </div>
 
-    <!-- INFORMACIÓN DEL DISPOSITIVO -->
+    <!-- DISPOSITIVO -->
     <div class="landing-info-card fade-in">
       <div class="landing-info-label">⌚ Dispositivo</div>
       <div class="landing-info-text">
@@ -1003,7 +1088,7 @@ body::after {
     <div>
       <div class="landing-section-title">Equipo</div>
       <div class="landing-section-h2">Quiénes somos</div>
-      <div class="team-grid fade-in">
+      <div class="team-grid fade-in" style="grid-template-columns:1fr 1fr">
         <div class="team-card">
           <div class="team-avatar">👩‍💻</div>
           <div class="team-name">Integrante 1</div>
@@ -1014,20 +1099,45 @@ body::after {
           <div class="team-name">Integrante 2</div>
           <div class="team-role">Hardware / ESP32</div>
         </div>
-        <div class="team-card">
-          <div class="team-avatar">👩‍🔬</div>
-          <div class="team-name">Integrante 3</div>
-          <div class="team-role">Sensores &amp; IoT</div>
-        </div>
-        <div class="team-card">
-          <div class="team-avatar">👨‍🎨</div>
-          <div class="team-name">Integrante 4</div>
-          <div class="team-role">Diseño UX</div>
-        </div>
       </div>
     </div>
 
-    <!-- CTA FINAL: Login / Registro -->
+    <!-- BOTONES NAVEGACIÓN -->
+    <div class="nav-btn-row fade-in">
+      <button class="cta-btn-login" onclick="showAcceso()">Acceder →</button>
+      <button class="cta-btn-register" onclick="showPublic()">Ficha Pública</button>
+    </div>
+
+  </div>
+
+  <div class="footer"><span>Smart</span>Safe · Yumbo, Colombia · 2026</div>
+
+</div><!-- /view-info -->
+
+
+<!-- ══════════════════════════════════════════
+     VISTA 3: ACCESO (Login / Registro)
+══════════════════════════════════════════ -->
+<div id="view-acceso" class="view">
+
+  <div class="landing-hero" style="padding-bottom:36px">
+    <div class="landing-logo-wrap">
+      <div class="landing-logo-icon">⚕</div>
+      <div class="landing-logo-text"><span class="smart">Smart</span><span class="safe">Safe</span></div>
+    </div>
+    <div class="landing-tagline">Panel de Control</div>
+    <h1 class="landing-hero-title" style="font-size:22px">Bienvenido de<br><span class="accent">nuevo</span></h1>
+  </div>
+
+  <div class="landing-ecg ecg-wrap">
+    <svg class="ecg-svg" viewBox="0 0 1000 80" preserveAspectRatio="none">
+      <path class="ecg-path" d="M0 40 L120 40 L150 40 L165 18 L195 62 L215 8 L240 40 L400 40 L430 40 L455 22 L480 58 L505 10 L530 40 L1000 40"/>
+    </svg>
+  </div>
+
+  <div class="landing-body">
+
+    <!-- CTA ACCESO -->
     <div class="landing-final-cta fade-in">
       <div class="cta-title">¿Listo para comenzar?</div>
       <div class="cta-sub">Inicia sesión para acceder al panel de administración o regístrate si es tu primera vez.</div>
@@ -1037,11 +1147,17 @@ body::after {
       </div>
     </div>
 
+    <!-- BOTONES NAVEGACIÓN -->
+    <div class="nav-btn-row fade-in">
+      <button class="cta-btn-login" onclick="showInfo()">← Conocer más</button>
+      <button class="cta-btn-register" onclick="showPublic()">Ficha Pública</button>
+    </div>
+
   </div>
 
   <div class="footer"><span>Smart</span>Safe · Yumbo, Colombia · 2026</div>
 
-</div><!-- /view-landing -->
+</div><!-- /view-acceso -->
 
 
 <!-- ══════════════════════════════════════════
@@ -1149,6 +1265,14 @@ body::after {
       <button class="qr-save" onclick="guardarQR()">📥 Guardar en el dispositivo</button>
     </div>
 
+  </div>
+
+  <!-- Botones de navegación ficha pública -->
+  <div class="landing-body" style="padding-top:0">
+    <div class="nav-btn-row fade-in">
+      <button class="cta-btn-login" onclick="showAcceso()">Acceder →</button>
+      <button class="cta-btn-register" onclick="showInfo()">Conocer más</button>
+    </div>
   </div>
 
   <div class="footer"><span>Smart</span>Safe · Monitor de Salud · 2026</div>
@@ -1682,10 +1806,37 @@ document.getElementById('fotoInput').addEventListener('change', function(e) {
 const fotoGuardada = localStorage.getItem('smartsafe_foto');
 if (fotoGuardada) document.getElementById('avatarImg').src = fotoGuardada;
 
+// Hero image upload
+const heroImgInput = document.getElementById('heroImgInput');
+if (heroImgInput) {
+  const savedHero = localStorage.getItem('smartsafe_hero_img');
+  if (savedHero) document.getElementById('heroImg').src = savedHero;
+  heroImgInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('heroImg').src = ev.target.result;
+      try { localStorage.setItem('smartsafe_hero_img', ev.target.result); } catch(e) {}
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 // ── NAVEGACIÓN ──
-function showLanding() {
+function showInicio() {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-landing').classList.add('active');
+  document.getElementById('view-inicio').classList.add('active');
+  window.scrollTo(0, 0);
+}
+function showInfo() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-info').classList.add('active');
+  window.scrollTo(0, 0);
+}
+function showAcceso() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-acceso').classList.add('active');
   window.scrollTo(0, 0);
 }
 function showPublic() {
@@ -1709,7 +1860,7 @@ function showRegistro() {
   document.getElementById('view-registro').classList.add('active');
   window.scrollTo(0, 0);
 }
-function goToAcceso() { onFabClick(); }
+function goToAcceso() { showAcceso(); }
 function goToRegistro() { showRegistro(); }
 
 // ── BOTÓN FLOTANTE ADMIN ──
@@ -1725,7 +1876,9 @@ function onFabClick() {
 document.getElementById('fabAdmin').addEventListener('click', onFabClick);
 
 // ── EXPONER FUNCIONES GLOBALES ──
-window.showLanding  = showLanding;
+window.showInicio   = showInicio;
+window.showInfo     = showInfo;
+window.showAcceso   = showAcceso;
 window.showPublic   = showPublic;
 window.showLogin    = showLogin;
 window.showAdmin    = showAdmin;
@@ -1733,8 +1886,8 @@ window.showRegistro = showRegistro;
 window.goToAcceso   = goToAcceso;
 window.goToRegistro = goToRegistro;
 
-// ── MOSTRAR LANDING AL CARGAR ──
-showLanding();
+// ── MOSTRAR INICIO AL CARGAR ──
+showInicio();
 </script>
 
 
