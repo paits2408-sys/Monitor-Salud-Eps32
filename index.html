@@ -958,6 +958,63 @@ body::after {
   display: flex; flex-direction: column; gap: 10px;
   margin-bottom: 8px;
 }
+
+/* ════════════════════════════════════════
+   HISTORIAL DE CAMBIOS
+════════════════════════════════════════ */
+.hist-section { padding-bottom: 8px; }
+.hist-info {
+  font-size: 11px; color: var(--muted); margin-bottom: 14px;
+  letter-spacing: 0.5px; line-height: 1.6;
+}
+.hist-refresh-btn {
+  float: right; margin-top: -2px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 5px 12px;
+  color: var(--cyan); font-family: 'Exo 2', sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  cursor: pointer; transition: all 0.2s;
+}
+.hist-refresh-btn:hover { background: var(--cyan-dim); }
+.hist-loading, .hist-empty {
+  font-size: 12px; color: var(--muted);
+  text-align: center; padding: 20px 0; letter-spacing: 1px;
+}
+.hist-row {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+  position: relative; transition: border-color 0.2s;
+}
+.hist-row:hover { border-color: var(--border2); }
+.hist-latest {
+  border-color: rgba(79,195,247,0.35) !important;
+  background: rgba(79,195,247,0.04) !important;
+}
+.hist-latest::before {
+  content: 'ÚLTIMO'; position: absolute; top: 10px; right: 12px;
+  font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  color: var(--cyan); background: rgba(79,195,247,0.12);
+  border: 1px solid rgba(79,195,247,0.25);
+  border-radius: 6px; padding: 2px 7px;
+}
+.hist-meta {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.hist-fecha, .hist-user {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+  color: var(--text-dim);
+}
+.hist-fecha { color: var(--cyan); }
+.hist-campos {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.hist-campo {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 4px 10px;
+  font-size: 11px; color: var(--text-dim); line-height: 1.5;
+}
+.hist-campo b { color: var(--text); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -989,7 +1046,7 @@ body::after {
       Tu seguridad, siempre<br><span class="accent">conectada</span>
     </h1>
     <p class="landing-hero-desc">
-      Monitoreo de salud en tiempo real con sensores inteligentes. Una reloj conectado a la red que puede salvar tu vida ante cualquier emergencia.
+      Monitoreo de salud en tiempo real con sensores inteligentes. Una pulsera conectada que puede salvar tu vida ante cualquier emergencia en Yumbo.
     </p>
     <div class="landing-cta-row">
       <button class="landing-btn-primary" onclick="showInfo()">Conocer más ↓</button>
@@ -1039,22 +1096,22 @@ body::after {
         <div class="feature-card fade-in">
           <div class="feature-icon">❤️</div>
           <div class="feature-title">Ritmo Cardíaco</div>
-          <div class="feature-desc">Accedo a monitoreo de frecuencia cardíaca vía sensor ESP32 en tiempo real.</div>
+          <div class="feature-desc">Monitoreo continuo de frecuencia cardíaca vía sensor ESP32 en tiempo real.</div>
         </div>
         <div class="feature-card purple fade-in">
           <div class="feature-icon">🫁</div>
           <div class="feature-title">Saturación O₂</div>
-          <div class="feature-desc">Acceso a medicion de oxigenación en sangre con informacion, por si esta por fuera de los parametros normales.</div>
+          <div class="feature-desc">Medición constante de oxigenación en sangre con alerta automática si baja.</div>
         </div>
         <div class="feature-card green fade-in">
           <div class="feature-icon">📡</div>
           <div class="feature-title">Alertas en Tiempo Real</div>
-          <div class="feature-desc">Notificación inmediata a contacto de emergencia, via WhatsApp ante situaciones críticas.</div>
+          <div class="feature-desc">Notificación inmediata a contactos de emergencia ante situaciones críticas.</div>
         </div>
         <div class="feature-card gold fade-in">
           <div class="feature-icon">🔲</div>
           <div class="feature-title">Código QR Vital</div>
-          <div class="feature-desc">QR con tu ficha médica (informacion vital) accesible para personal de salud en segundos.</div>
+          <div class="feature-desc">QR con tu ficha médica accesible para personal de salud en segundos.</div>
         </div>
       </div>
     </div>
@@ -1063,7 +1120,7 @@ body::after {
     <div class="landing-info-card fade-in">
       <div class="landing-info-label">⌚ Dispositivo</div>
       <div class="landing-info-text">
-        SmartSafe es una <strong>Pulsera Inteligente</strong> que otorga la hora-fecha y cuenta con boton de panico o emergencia, sensores de ritmo cardíaco y oxigenación, conectada vía <strong>ESP32</strong> a una plataforma web. Organiza tu información personal y datos de salud de forma segura para que las entidades autorizadas puedan acceder cuando sea necesario.<br><br>
+        SmartSafe es una <strong>pulsera inteligente</strong> con sensores de temperatura, ritmo cardíaco y oxigenación, conectada vía <strong>ESP32</strong> a una plataforma web. Organiza tu información personal y datos de salud de forma segura para que las entidades autorizadas puedan acceder cuando sea necesario.<br><br>
         Quienes escaneen tu código QR únicamente visualizan información esencial y un contacto de emergencia. <strong>SmartSafe no reemplaza la atención médica</strong>, sino que facilita alertas y una respuesta más rápida ante incidentes.
       </div>
     </div>
@@ -1091,13 +1148,13 @@ body::after {
       <div class="team-grid fade-in" style="grid-template-columns:1fr 1fr">
         <div class="team-card">
           <div class="team-avatar">👩‍💻</div>
-          <div class="team-name">Katalina Salazar</div>
-          <div class="team-role">Desarrollo Web / Hardware / ESP32</div>
+          <div class="team-name">Integrante 1</div>
+          <div class="team-role">Desarrollo Web</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar">👩‍💻</div>
-          <div class="team-name">Sara Reyes</div>
-          <div class="team-role">Desarrollo Web / Hardware / ESP32</div>
+          <div class="team-avatar">👨‍🔧</div>
+          <div class="team-name">Integrante 2</div>
+          <div class="team-role">Hardware / ESP32</div>
         </div>
       </div>
     </div>
@@ -1442,6 +1499,16 @@ body::after {
       <div class="save-status" id="saveStatus"></div>
     </div>
 
+    <!-- ── HISTORIAL DE CAMBIOS ── -->
+    <div class="admin-section hist-section">
+      <div class="admin-section-title">
+        🗂️ Historial de cambios
+        <button class="hist-refresh-btn" onclick="cargarHistorial()" title="Actualizar">↺ Actualizar</button>
+      </div>
+      <div class="hist-info">Cada vez que guardas, se registra aquí con fecha, hora y usuario.</div>
+      <div id="historialLista"><div class="hist-empty">Presiona "Actualizar" para ver el historial.</div></div>
+    </div>
+
   </div>
 
 </div><!-- /view-admin -->
@@ -1452,7 +1519,7 @@ body::after {
 ══════════════════════════════════════════ -->
 <script type="module">
 import { initializeApp }                                    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, set, update, get }     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, set, update, get, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, signOut,
          onAuthStateChanged, createUserWithEmailAndPassword,
          sendPasswordResetEmail }                           from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1754,10 +1821,37 @@ window.guardarDatos = async () => {
     contacto:     document.getElementById('f-contacto').value.trim(),
   };
 
+  // ── Obtener email del usuario autenticado ──
+  const usuario = auth.currentUser ? auth.currentUser.email : 'desconocido';
+
+  // ── Fecha y hora Colombia (UTC-5) ──
+  const ahora = new Date();
+  const fechaHora = ahora.toLocaleString('es-CO', {
+    timeZone: 'America/Bogota',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false
+  });
+  const isoUTC = ahora.toISOString();
+
+  // ── Registro de historial ──
+  const entradaHistorial = {
+    fecha:    fechaHora,
+    fechaISO: isoUTC,
+    usuario:  usuario,
+    datos:    datos
+  };
+
   try {
+    // 1. Actualizar datos actuales del paciente
     await update(ref(db, 'paciente'), datos);
+    // 2. Guardar entrada en historial (push genera ID único automático)
+    await push(ref(db, 'historial'), entradaHistorial);
+
     status.className = 'save-status ok';
-    status.innerText = '✅ Datos guardados correctamente en Firebase';
+    status.innerText = '✅ Datos guardados y registrados en el historial';
+    // Recargar historial visible
+    cargarHistorial();
   } catch (e) {
     status.className = 'save-status err';
     status.innerText = '❌ Error al guardar: ' + e.message;
@@ -1765,6 +1859,37 @@ window.guardarDatos = async () => {
     btn.disabled = false;
     btn.innerHTML = 'Guardar todos los datos';
     setTimeout(() => { status.className = 'save-status'; }, 4000);
+  }
+};
+
+// ── Cargar y mostrar historial en el panel admin ──
+window.cargarHistorial = async () => {
+  const contenedor = document.getElementById('historialLista');
+  if (!contenedor) return;
+  contenedor.innerHTML = '<div class="hist-loading">Cargando historial...</div>';
+  try {
+    const snap = await get(ref(db, 'historial'));
+    if (!snap.exists()) {
+      contenedor.innerHTML = '<div class="hist-empty">Sin registros aún.</div>';
+      return;
+    }
+    const registros = [];
+    snap.forEach(child => registros.push({ id: child.key, ...child.val() }));
+    // Mostrar del más reciente al más antiguo
+    registros.reverse();
+    contenedor.innerHTML = registros.map((r, i) => `
+      <div class="hist-row ${i === 0 ? 'hist-latest' : ''}">
+        <div class="hist-meta">
+          <span class="hist-fecha">📅 ${r.fecha}</span>
+          <span class="hist-user">👤 ${r.usuario}</span>
+        </div>
+        <div class="hist-campos">
+          ${Object.entries(r.datos || {}).map(([k, v]) => v ? `<span class="hist-campo"><b>${k}:</b> ${v}</span>` : '').join('')}
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    contenedor.innerHTML = `<div class="hist-empty">Error: ${e.message}</div>`;
   }
 };
 
@@ -1854,6 +1979,8 @@ function showAdmin() {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-admin').classList.add('active');
   window.scrollTo(0, 0);
+  // Cargar historial automáticamente al abrir el panel
+  setTimeout(() => { if (window.cargarHistorial) cargarHistorial(); }, 400);
 }
 function showRegistro() {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
