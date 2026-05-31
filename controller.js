@@ -40,12 +40,32 @@ import {
 //  INICIALIZACIÓN
 // ════════════════════════════════════════
 
-/** Arranca la app: suscripciones en tiempo real + mostrar vista inicial. */
 function init() {
   _suscribirDatosFirebase();
   _suscribirAuth();
   _bindEventos();
   mostrarVista('view-inicio');
+  _initQR();
+}
+
+// ════════════════════════════════════════
+//  QR
+// ════════════════════════════════════════
+
+function _initQR() {
+  // QRCode viene de un script clásico; esperamos a que esté disponible
+  if (typeof QRCode === 'undefined') {
+    setTimeout(_initQR, 100);
+    return;
+  }
+  const el = document.getElementById('qrcode');
+  if (!el) return;
+  const urlPagina = window.location.href.split('?')[0];
+  new QRCode(el, {
+    text: urlPagina, width: 180, height: 180,
+    colorDark: '#0a1628', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
 }
 
 // ════════════════════════════════════════
@@ -66,7 +86,6 @@ function _suscribirDatosFirebase() {
 function _suscribirAuth() {
   escucharAuth(user => {
     if (user && !user.isAnonymous) {
-      // Si el usuario estaba en la pantalla de login, lo lleva al admin
       const viewLogin = document.getElementById('view-login');
       if (viewLogin && viewLogin.classList.contains('active')) {
         mostrarVista('view-admin');
@@ -77,18 +96,18 @@ function _suscribirAuth() {
 }
 
 // ════════════════════════════════════════
-//  NAVEGACIÓN (expuesta globalmente)
+//  NAVEGACIÓN
 // ════════════════════════════════════════
 
 export function showInicio()   { mostrarVista('view-inicio'); }
 export function showInfo()     { mostrarVista('view-info'); }
 export function showAcceso()   { mostrarVista('view-acceso'); }
 export function showPublic()   { mostrarVista('view-public'); }
-export function showLogin()    {
+export function showLogin() {
   mostrarVista('view-login');
   setTimeout(() => document.getElementById('loginEmail').focus(), 300);
 }
-export function showAdmin()    {
+export function showAdmin() {
   mostrarVista('view-admin');
   setTimeout(() => cargarHistorial(), 400);
 }
@@ -105,14 +124,10 @@ export function onFabClick() {
   if (window._verificarAdmin) {
     window._verificarAdmin();
   } else {
-    // Firebase todavía cargando, reintenta en 300ms
     setTimeout(onFabClick, 300);
   }
 }
 
-/**
- * Verifica si existe un admin registrado y redirige a login o registro.
- */
 async function verificarAdmin() {
   const existe = await verificarAdminRegistrado();
   existe ? showLogin() : showRegistro();
@@ -162,8 +177,8 @@ export async function recuperarPasswordHandler() {
     const el = document.getElementById('loginError');
     if (el) {
       el.innerText = '✅ Correo de recuperación enviado. Revisa tu bandeja de entrada.';
-      el.style.color      = 'var(--green)';
-      el.style.background = 'rgba(34,211,165,0.1)';
+      el.style.color       = 'var(--green)';
+      el.style.background  = 'rgba(34,211,165,0.1)';
       el.style.borderColor = 'rgba(34,211,165,0.3)';
       el.classList.add('show');
     }
@@ -176,7 +191,6 @@ export async function recuperarPasswordHandler() {
 //  REGISTRO — 3 PASOS
 // ════════════════════════════════════════
 
-/** Paso 1 → validar y pasar al paso 2. */
 export function regNextStep() {
   const email = getInputVal('regEmail');
   const pwd   = document.getElementById('regPassword').value;
@@ -203,12 +217,10 @@ export function regNextStep() {
   regMostrarPaso2(email);
 }
 
-/** Paso 2 → volver al paso 1. */
 export function regVolver() {
   regMostrarPaso1();
 }
 
-/** Paso 2 → crear cuenta en Firebase. */
 export async function doRegistro() {
   const email = getInputVal('regEmail');
   const pwd   = document.getElementById('regPassword').value;
@@ -224,13 +236,12 @@ export async function doRegistro() {
     if (e.code === 'auth/email-already-in-use') msg = 'Este correo ya tiene una cuenta registrada.';
     if (e.code === 'auth/invalid-email')         msg = 'El formato del correo no es válido.';
     if (e.code === 'auth/weak-password')          msg = 'La contraseña es demasiado débil.';
-    if (e.message)                                msg = e.message; // errores del modelo
+    if (e.message)                                msg = e.message;
     mostrarError('regError2', msg);
     setBtnState('btnRegFinal', false, 'Crear mi cuenta');
   }
 }
 
-/** Paso 3 → ir al panel admin. */
 export function regTerminar() { showAdmin(); }
 
 // ════════════════════════════════════════
@@ -238,7 +249,7 @@ export function regTerminar() { showAdmin(); }
 // ════════════════════════════════════════
 
 export function checkPassword() {
-  const pwd       = document.getElementById('regPassword').value;
+  const pwd        = document.getElementById('regPassword').value;
   const evaluacion = evaluarPassword(pwd);
   renderStrength(pwd, evaluacion);
 }
@@ -290,7 +301,7 @@ export async function cargarHistorial() {
 }
 
 // ════════════════════════════════════════
-//  QR
+//  GUARDAR QR
 // ════════════════════════════════════════
 
 export function guardarQR() {
@@ -307,7 +318,6 @@ export function guardarQR() {
 // ════════════════════════════════════════
 
 function _initFotos() {
-  // Avatar del paciente
   const fotoInput = document.getElementById('fotoInput');
   if (fotoInput) {
     const saved = localStorage.getItem('smartsafe_foto');
@@ -325,7 +335,6 @@ function _initFotos() {
     });
   }
 
-  // Imagen hero de la landing
   const heroImgInput = document.getElementById('heroImgInput');
   if (heroImgInput) {
     const savedHero = localStorage.getItem('smartsafe_hero_img');
@@ -349,7 +358,6 @@ function _initFotos() {
 // ════════════════════════════════════════
 
 function _bindEventos() {
-  // Enter en campo de contraseña del login
   const loginPassword = document.getElementById('loginPassword');
   if (loginPassword) {
     loginPassword.addEventListener('keydown', e => {
@@ -357,10 +365,8 @@ function _bindEventos() {
     });
   }
 
-  // Foto de perfil y hero image
   _initFotos();
 
-  // Botón flotante admin
   const fabAdmin = document.getElementById('fabAdmin');
   if (fabAdmin) fabAdmin.addEventListener('click', onFabClick);
 }
@@ -393,13 +399,9 @@ window.cargarHistorial      = cargarHistorial;
 window.guardarQR            = guardarQR;
 window._verificarAdmin      = verificarAdmin;
 
-// ── ARRANQUE ──
-init();
-
-// ── QR (se genera tras el DOM) ──
-const urlPagina = window.location.href.split('?')[0];
-new QRCode(document.getElementById('qrcode'), {
-  text: urlPagina, width: 180, height: 180,
-  colorDark: '#0a1628', colorLight: '#ffffff',
-  correctLevel: QRCode.CorrectLevel.H
-});
+// ── ARRANQUE (DOMContentLoaded garantiza que el HTML ya está listo) ──
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
