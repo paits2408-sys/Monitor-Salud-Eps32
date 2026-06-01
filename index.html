@@ -1363,7 +1363,7 @@ body::after {
       <input type="file" id="fotoInput" accept="image/*">
       <div class="patient-name" id="nombre">— —</div>
       <div class="badge-row">
-        <div class="badge"># Documento <span id="documento">--</span></div>
+        <div class="badge"># <span id="documento">--</span></div>
         <div class="badge">Edad <span id="edad">--</span></div>
       </div>
       <div class="badge-row">
@@ -1900,9 +1900,22 @@ async function Model_guardarPaciente(datos) {
 async function Model_obtenerHistorial() {
   const snap = await get(ref(db, 'historial'));
   if (!snap.exists()) return [];
-  const registros = [];
-  snap.forEach(child => registros.push({ id: child.key, ...child.val() }));
-  registros.reverse();
+
+  // Object.entries sobre el valor crudo garantiza que se lean TODOS los hijos
+  const raw = snap.val();
+  const registros = Object.entries(raw)
+    .map(([id, val]) => {
+      if (!val || typeof val !== 'object') return null;
+      return { id, ...val };
+    })
+    .filter(Boolean);
+
+  // Ordenar del mas reciente al mas antiguo
+  registros.sort((a, b) => {
+    if (a.fechaISO && b.fechaISO) return new Date(b.fechaISO) - new Date(a.fechaISO);
+    return b.id > a.id ? 1 : -1;
+  });
+
   return registros;
 }
 
