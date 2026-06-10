@@ -1115,6 +1115,105 @@ body::after {
   width: 100%; height: 100%;
   border: none;
 }
+
+/* ── MANUAL DE INSTRUCCIONES ── */
+.manual-section {
+  padding: 0 16px 40px;
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+.manual-eyebrow {
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--cyan); font-weight: 600;
+  text-align: center; margin-bottom: 8px;
+}
+.manual-heading {
+  font-size: 18px; font-weight: 800; color: #fff;
+  text-align: center; margin-bottom: 20px;
+  letter-spacing: -0.4px;
+}
+.manual-card {
+  position: relative;
+  display: flex; align-items: center; gap: 18px;
+  background: linear-gradient(135deg, var(--surface2) 0%, rgba(21,32,53,0.9) 100%);
+  border: 1px solid rgba(79,195,247,0.25);
+  border-radius: 22px;
+  padding: 20px 22px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.28s cubic-bezier(.34,1.56,.64,1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
+  box-shadow: 0 4px 32px rgba(8,12,24,0.5), 0 0 0 0 rgba(79,195,247,0);
+  overflow: hidden;
+}
+.manual-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(79,195,247,0.07) 0%, transparent 70%);
+  opacity: 0; transition: opacity 0.3s;
+  border-radius: 22px;
+}
+.manual-card:hover::before { opacity: 1; }
+.manual-card:hover {
+  transform: translateY(-4px) scale(1.015);
+  border-color: rgba(79,195,247,0.55);
+  box-shadow: 0 8px 40px rgba(8,12,24,0.6), 0 0 28px rgba(79,195,247,0.18);
+}
+.manual-card:active { transform: translateY(-1px) scale(1.005); }
+
+/* Icono libro SVG */
+.manual-book-wrap {
+  flex-shrink: 0;
+  width: 58px; height: 58px;
+  background: rgba(79,195,247,0.09);
+  border: 1px solid rgba(79,195,247,0.28);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s, border-color 0.3s;
+}
+.manual-card:hover .manual-book-wrap {
+  background: rgba(79,195,247,0.16);
+  border-color: rgba(79,195,247,0.5);
+}
+.manual-book-svg {
+  width: 32px; height: 32px;
+  transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.manual-card:hover .manual-book-svg { transform: rotate(-6deg) scale(1.12); }
+
+.manual-text { flex: 1; min-width: 0; }
+.manual-text-title {
+  font-size: 14px; font-weight: 700; color: #fff;
+  margin-bottom: 4px; line-height: 1.3;
+}
+.manual-text-sub {
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 0.2px; line-height: 1.4;
+}
+.manual-text-badge {
+  display: inline-block; margin-top: 6px;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--cyan); background: rgba(79,195,247,0.1);
+  border: 1px solid rgba(79,195,247,0.25);
+  border-radius: 6px; padding: 2px 8px; font-weight: 600;
+}
+.manual-chevron {
+  flex-shrink: 0; width: 28px; height: 28px;
+  background: rgba(79,195,247,0.08);
+  border: 1px solid rgba(79,195,247,0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--cyan); font-size: 14px; font-weight: 700;
+  transition: background 0.25s, transform 0.25s, border-color 0.25s;
+}
+.manual-card:hover .manual-chevron {
+  background: rgba(79,195,247,0.18);
+  border-color: rgba(79,195,247,0.5);
+  transform: translateX(3px);
+}
 </style>
 </head>
 <body>
@@ -1175,12 +1274,43 @@ body::after {
     </div>
   </div>
 
-  <!-- Manual de Instrucciones -->
-    <div class="video-label">▶ MANUAL DE INSTRUCCIONES</div>
-    <div class="video-title">https://comfandiedu-my.sharepoint.com/:b:/g/personal/katalinasalazargomez_est_comfandi_edu_co/IQA-0K-viXzHRJZmYkGifCkmAbm6pYwPlRbh0LMGUvxGrjY?e=2d5P2S</div>
-    </div>
+  <!-- MANUAL DE INSTRUCCIONES -->
+  <div class="manual-section">
+    <div class="manual-eyebrow">📄 Documentación oficial</div>
+    <div class="manual-heading">Manual de instrucciones</div>
+    <a class="manual-card"
+       href="https://comfandiedu-my.sharepoint.com/:b:/g/personal/katalinasalazargomez_est_comfandi_edu_co/IQBEt3P7XqN-RZKSto-t080QATnzmP2VzsbdcEFN1hSV1oQ?e=psYTaP"
+       target="_blank" rel="noopener noreferrer">
+      <!-- Icono libro SVG -->
+      <div class="manual-book-wrap">
+        <svg class="manual-book-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Tapa trasera -->
+          <rect x="6" y="5" width="18" height="22" rx="3" fill="rgba(79,195,247,0.15)" stroke="rgba(79,195,247,0.4)" stroke-width="1.2"/>
+          <!-- Páginas interiores -->
+          <rect x="8" y="7" width="14" height="18" rx="2" fill="rgba(79,195,247,0.08)" stroke="rgba(79,195,247,0.25)" stroke-width="1"/>
+          <!-- Tapa delantera -->
+          <rect x="8" y="5" width="16" height="22" rx="3" fill="rgba(15,24,41,0.9)" stroke="#4fc3f7" stroke-width="1.4"/>
+          <!-- Lomo -->
+          <rect x="8" y="5" width="3" height="22" rx="1.5" fill="rgba(79,195,247,0.35)"/>
+          <!-- Líneas de texto -->
+          <line x1="14" y1="11" x2="22" y2="11" stroke="rgba(79,195,247,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="14" y1="14.5" x2="22" y2="14.5" stroke="rgba(79,195,247,0.35)" stroke-width="1" stroke-linecap="round"/>
+          <line x1="14" y1="18" x2="20" y2="18" stroke="rgba(79,195,247,0.35)" stroke-width="1" stroke-linecap="round"/>
+          <line x1="14" y1="21.5" x2="19" y2="21.5" stroke="rgba(79,195,247,0.25)" stroke-width="1" stroke-linecap="round"/>
+          <!-- Cruz médica pequeña -->
+          <rect x="14.5" y="24.2" width="5" height="1.3" rx="0.6" fill="#4fc3f7"/>
+          <rect x="16.4" y="22.5" width="1.3" height="4.5" rx="0.6" fill="#4fc3f7"/>
+        </svg>
+      </div>
+      <div class="manual-text">
+        <div class="manual-text-title">Manual de usuario — SmartSafe</div>
+        <div class="manual-text-sub">Guía completa de uso y manejo del dispositivo</div>
+        <span class="manual-text-badge">Ver en SharePoint</span>
+      </div>
+      <div class="manual-chevron">›</div>
+    </a>
   </div>
-   
+
   <div class="footer"><span>Smart</span>Safe · Yumbo, Colombia · 2026</div>
 
 </div><!-- /view-inicio -->
@@ -1216,22 +1346,22 @@ body::after {
         <div class="feature-card fade-in">
           <div class="feature-icon">❤️</div>
           <div class="feature-title">Ritmo Cardíaco</div>
-          <div class="feature-desc">Monitoreo continuo de frecuencia cardíaca vía sensor ESP32 en tiempo real.</div>
+          <div class="feature-desc">Monitoreo de frecuencia cardíaca vía sensor ESP32 en tiempo real.</div>
         </div>
         <div class="feature-card purple fade-in">
           <div class="feature-icon">🫁</div>
           <div class="feature-title">Saturación O₂</div>
-          <div class="feature-desc">Medición constante de oxigenación en sangre con alerta automática si baja.</div>
+          <div class="feature-desc">Medición de oxigenación en sangre con rango de parametros normales.</div>
         </div>
         <div class="feature-card green fade-in">
           <div class="feature-icon">📡</div>
           <div class="feature-title">Alertas en Tiempo Real</div>
-          <div class="feature-desc">Notificación inmediata a contactos de emergencia ante situaciones críticas.</div>
+          <div class="feature-desc">Notificación inmediata a contacto de emergencia via Whatsapp, ante situaciones críticas.</div>
         </div>
         <div class="feature-card gold fade-in">
           <div class="feature-icon">🔲</div>
           <div class="feature-title">Código QR Vital</div>
-          <div class="feature-desc">QR con tu ficha médica accesible para personal de salud en segundos.</div>
+          <div class="feature-desc">QR con tu ficha médica y datos personales para encargados de la salud.</div>
         </div>
       </div>
     </div>
@@ -1240,7 +1370,7 @@ body::after {
     <div class="landing-info-card fade-in">
       <div class="landing-info-label">⌚ Dispositivo</div>
       <div class="landing-info-text">
-        SmartSafe es una <strong>pulsera inteligente</strong> con sensores de temperatura, ritmo cardíaco y oxigenación, conectada vía <strong>ESP32</strong> a una plataforma web. Organiza tu información personal y datos de salud de forma segura para que las entidades autorizadas puedan acceder cuando sea necesario.<br><br>
+        SmartSafe es una <strong>pulsera inteligente</strong> con boton de panico, sensor de ritmo cardíaco y oxigenación, conectada vía <strong>ESP32</strong> a una plataforma web. Organiza tu información personal y datos de salud de forma segura para que las entidades autorizadas puedan acceder cuando sea necesario.<br><br>
         Quienes escaneen tu código QR únicamente visualizan información esencial y un contacto de emergencia. <strong>SmartSafe no reemplaza la atención médica</strong>, sino que facilita alertas y una respuesta más rápida ante incidentes.
       </div>
     </div>
@@ -1268,13 +1398,13 @@ body::after {
       <div class="team-grid fade-in" style="grid-template-columns:1fr 1fr">
         <div class="team-card">
           <div class="team-avatar">👩‍💻</div>
-          <div class="team-name">Integrante 1</div>
-          <div class="team-role">Desarrollo Web</div>
+          <div class="team-name">Katalina Salazar</div>
+          <div class="team-role">Desarrollo Web/Hardware/ESP32</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar">👨‍🔧</div>
-          <div class="team-name">Integrante 2</div>
-          <div class="team-role">Hardware / ESP32</div>
+          <div class="team-avatar">👩‍💻</div>
+          <div class="team-name">Sara Reyes</div>
+          <div class="team-role">Desarrollo Web/Hardware/ESP32</div>
         </div>
       </div>
     </div>
@@ -1369,7 +1499,7 @@ body::after {
       <input type="file" id="fotoInput" accept="image/*">
       <div class="patient-name" id="nombre">— —</div>
       <div class="badge-row">
-        <div class="badge"># <span id="documento">--</span></div>
+        <div class="badge"># Documento <span id="documento">--</span></div>
         <div class="badge">Edad <span id="edad">--</span></div>
       </div>
       <div class="badge-row">
